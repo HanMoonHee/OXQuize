@@ -3,6 +3,9 @@ package oxq.action.signup;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -10,12 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-/**
- * 회원가입창
- * @author 신용제
- *
- */
-public class SignUp extends JFrame {
+public class SignUp extends JFrame implements ActionListener {
 	private JLabel idL, pwdL, pwdCheckL, nameL, nickNameL, telL, emailL, hyphenL1, hyphenL2, golL;
 	private JTextField idT, pwdT, pwdCheckT, nameT, nickNameT, tel2T, tel3T, emailT;
 	private JComboBox<String> tel1C, emailC;
@@ -108,7 +106,6 @@ public class SignUp extends JFrame {
 		centerP.add(telP);
 		centerP.add(emailP);
 		
-
 		Container con = this.getContentPane();
 		con.add("Center", centerP);
 		con.add("South", buttonP);
@@ -117,10 +114,33 @@ public class SignUp extends JFrame {
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
-
+	}
+	
+	public void event() {
+		idB.addActionListener(this);
+		emailB.addActionListener(this);
+		addB.addActionListener(this); 
+		cancelB.addActionListener(this);
+		clearB.addActionListener(this);
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == idB) {	// 중복확인
+			
+		} else if(e.getSource() == emailB) {	// 이메일 인증
+			
+		} else if(e.getSource() == addB) {	// 회원가입
+			
+		} else if(e.getSource() == cancelB) {	// 가입취소
+			
+		} else if(e.getSource() == clearB) {	// 다시작성
+			
+		}
+	}
+	
 	public static void main(String[] args) {
-		new SignUp();
+		new SignUp().event();
 	}
+	
 }
