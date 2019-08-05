@@ -3,12 +3,13 @@ package oxq.dto;
 public class MemberDTO {
 	private	String member_id;		// 회원 아이디
 	private String member_pwd;		// 회원 패스워드
-	private String member_name;	// 회원 이름
-	private String member_nickName;// 회원 닉네임
+	private String member_name;		// 회원 이름
+	private String member_nickName; // 회원 닉네임
 	private String member_tel;		// 회원 전화번호
 	private String member_email;	// 회원 이메일	
 	private int member_login;		// 회원 로그인 여부 (로그인이면 1, 아니면 0)
-	// getter
+	
+	// getters
 	public String getId() {return member_id;}
 	public String getPwd() {return member_pwd;}
 	public String getName() {return member_name;}
@@ -16,7 +17,8 @@ public class MemberDTO {
 	public String getTel() {return member_tel;}
 	public String getEmail() {return member_email;}
 	public int getLogin() {return member_login;}
-	// setter
+	
+	// setters
 	public void setMember_id(String member_id) {this.member_id = member_id;}
 	public void setMember_pwd(String member_pwd) {this.member_pwd = member_pwd;}
 	public void setMember_name(String member_name) {this.member_name = member_name;}
