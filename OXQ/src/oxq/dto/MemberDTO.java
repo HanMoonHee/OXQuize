@@ -1,6 +1,8 @@
 package oxq.dto;
 
-public class MemberDTO {
+import java.io.Serializable;
+
+public class MemberDTO implements Serializable {
 	private	String member_id;		// 회원 아이디
 	private String member_pwd;		// 회원 패스워드
 	private String member_name;		// 회원 이름

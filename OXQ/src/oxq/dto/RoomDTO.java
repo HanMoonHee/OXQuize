@@ -1,6 +1,8 @@
 package oxq.dto;
 
-public class RoomDTO {
+import java.io.Serializable;
+
+public class RoomDTO implements Serializable {
 	private int room_no;		// 게임방 번호
 	private String room_name;	// 게임방 이름
 	private String room_pwd;	// 게임방 비밀번호
