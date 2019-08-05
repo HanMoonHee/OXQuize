@@ -1,5 +1,8 @@
 package oxq.action.login;
 
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -11,59 +14,43 @@ import javax.swing.JTextField;
 
 public class Login extends JFrame implements ActionListener, Runnable {
 
-	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-
+	private JLabel loginL, pwdL;
+	private JTextField loginT, pwdT;
+	private JButton signIN, signUP;
+	
+	
 	public Login() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("LOGIN");
+		JPanel pn1 = new JPanel();
+		loginL = new JLabel("LOGIN : ");
+		loginT = new JTextField(15);
+		pn1.add(loginL);
+		pn1.add(loginT);
 		
-		contentPane = new JPanel();
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
+		JPanel pn2 = new JPanel();
+		pwdL = new JLabel("PASSWORD : ");
+		pwdT = new JTextField(15);
+		pn2.add(pwdL);
+		pn2.add(pwdT);
 		
-		JLabel lblLogin = new JLabel("LOGIN :");
-		lblLogin.setBounds(391, 271, 45, 15);
-		contentPane.add(lblLogin);
+		JPanel pn3 = new JPanel();
+		signIN = new JButton("SIGN IN");
+		signUP = new JButton("SIGN UP");
+		pn3.add(signIN);
+		pn3.add(signUP);
 		
-		textField = new JTextField();
-		textField.setText("???");
-		textField.setBounds(483, 268, 116, 21);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		JPanel centerP = new JPanel(new GridLayout(3, 1));
+		centerP.add(pn1);
+		centerP.add(pn2);
+		centerP.add(pn3);
 		
-		JLabel lblPassword = new JLabel("PASSWORD :");
-		lblPassword.setBounds(361, 294, 75, 15);
-		contentPane.add(lblPassword);
+		JPanel alignP = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 200));
+		alignP.add(centerP);
 		
-		textField_1 = new JTextField();
-		textField_1.setText("???");
-		textField_1.setBounds(483, 291, 116, 21);
-		contentPane.add(textField_1);
-		textField_1.setColumns(10);
+		Container contentPane = this.getContentPane();
+		contentPane.add("Center", alignP);
 		
-		JButton btnNewButton = new JButton("SIGN IN");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		btnNewButton.setBounds(391, 359, 207, 21);
-		contentPane.add(btnNewButton);
-		
-		JButton btnExit = new JButton("SIGN UP");
-		btnExit.setBounds(391, 385, 208, 23);
-		contentPane.add(btnExit);
-		
-		JButton button = new JButton("EXIT");
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		button.setBounds(391, 413, 208, 23);
-		contentPane.add(button);
-		
-		
-		setBounds(50, 50, 1000, 800);
+		setBounds(50, 50, 800, 600);
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -71,13 +58,11 @@ public class Login extends JFrame implements ActionListener, Runnable {
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 	
