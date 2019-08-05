@@ -26,11 +26,11 @@ public class WaitingRoom extends JFrame{
 	public WaitingRoom() {
 		
 		
-		//¹öÆ°
-		roomAdd = new JButton("¹æ¸¸µé±â");
-		send = new JButton("º¸³»±â");
+		//ë²„íŠ¼
+		roomAdd = new JButton("ë°©ë§Œë“¤ê¸°");
+		send = new JButton("ë³´ë‚´ê¸°");
 		
-		//ÅØ½ºÆ® ¿¡¸®¾î
+		//í…ìŠ¤íŠ¸ ì—ë¦¬ì–´
 		chat = new JTextArea();
 		chat2 = new JTextArea();
 		
@@ -40,9 +40,9 @@ public class WaitingRoom extends JFrame{
 		
 		chat.setEditable(false);
 		
-		//¶óº§
-		user = new JLabel("<À¯Àú ¸ñ·Ï>");
-		rank = new JLabel("<·©Å·>");
+		//ë¼ë²¨
+		user = new JLabel("<ìœ ì € ëª©ë¡>");
+		rank = new JLabel("<ë­í‚¹>");
 		//JList
 		userList = new JList();
 		rankList = new JList();
