@@ -1,6 +1,8 @@
 package oxq.dto;
 
-public class GameDTO {
+import java.io.Serializable;
+
+public class GameDTO implements Serializable {
 	private String member_id;	// 회원 아이디
 	private int wincount;		// 1등한 횟수
 	private int o_count;		// 맞춘 개수

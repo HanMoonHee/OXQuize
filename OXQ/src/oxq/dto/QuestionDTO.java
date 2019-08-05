@@ -1,6 +1,8 @@
 package oxq.dto;
 
-public class QuestionDTO {
+import java.io.Serializable;
+
+public class QuestionDTO implements Serializable {
 	private int quest_no;		// 문제  번호
 	private String question;	// 문제 
 	private String answer;		// 문제 답
