@@ -5,26 +5,28 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class Login extends JFrame implements ActionListener, Runnable{
 	
-	private JLabel loginL, pwdL;
-	private JTextField loginT, pwdT;
+	private JLabel idL, pwdL;
+	private JTextField idT, pwdT;
 	private JButton signIN, signUP, idFindB, pwFindB;
 	
 	public Login() {
 		setTitle("LOGIN");
 		JPanel pn1 = new JPanel();
-		loginL = new JLabel("LOGIN : ");
-		loginT = new JTextField(15);
-		pn1.add(loginL);
-		pn1.add(loginT);
+		idL = new JLabel("ID : ");
+		idT = new JTextField(15);
+		pn1.add(idL);
+		pn1.add(idT);
 		
 		JPanel pn2 = new JPanel();
 		pwdL = new JLabel("PASSWORD : ");
@@ -60,6 +62,11 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		signIN.addActionListener(this);
+		signUP.addActionListener(this);
+		idFindB.addActionListener(this);
+		pwFindB.addActionListener(this);
 	}
 	
 	@Override
@@ -67,10 +74,31 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		
 	}
 
+	private MemberDAO dao = MemberDAO.getInstance();
+	private String nickName;
+	
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals("로그인")) {
-			new SignIn();
+		if(e.getActionCommand().equals("SIGN IN")) {
+			if(idT.getText().length()<=0) {
+				JOptionPane.showMessageDialog(this, "아이디를 입력해주세요", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
+			if (pwdT.getText().length() <= 0 && idT.getText().length() > 0) {
+				JOptionPane.showMessageDialog(this, "비밀번호를 입력해주세요", "private", JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				ArrayList<MemberDTO> list = dao.check(); //memberDTO를 list변수에 남아 dao와 check이벤트를 실행?
+				
+				for (MemberDTO dto : list) {
+					if(dto.getId().equals(idT.getText())) {
+						nickName = idT.getText();
+						
+					}
+				}
+			}
+			
+			
 		}//로그인
 		
 		else if (e.getActionCommand().equals("회원가입")) {
