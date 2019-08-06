@@ -1,4 +1,4 @@
-package oxq.action.login;
+package oxq.action.signin;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -12,13 +12,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class Login extends JFrame implements ActionListener, Runnable{
-	
+public class SignIn extends JFrame implements ActionListener, Runnable {
+
 	private JLabel loginL, pwdL;
 	private JTextField loginT, pwdT;
 	private JButton signIN, signUP, idFindB, pwFindB;
 	
-	public Login() {
+	
+	public SignIn() {
 		setTitle("LOGIN");
 		JPanel pn1 = new JPanel();
 		loginL = new JLabel("LOGIN : ");
@@ -39,12 +40,10 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		pn3.add(signUP);
 		
 		JPanel pn4 = new JPanel();
-		idFindB = new JButton("ID SEARCH");
-		pwFindB = new JButton("PASSWORD SEARCH");
-		pn4.add(idFindB);
-		pn4.add(pwFindB);
+		idFindB = new JButton("idFindB");
+		pwFindB = new JButton("pwFindB");
 		
-		JPanel centerP = new JPanel(new GridLayout(4, 1));
+		JPanel centerP = new JPanel(new GridLayout(3, 1));
 		centerP.add(pn1);
 		centerP.add(pn2);
 		centerP.add(pn3);
@@ -69,28 +68,12 @@ public class Login extends JFrame implements ActionListener, Runnable{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals("로그인")) {
-			new SignIn();
-		}//로그인
-		
-		else if (e.getActionCommand().equals("회원가입")) {
-			
-		}
-		
-		else if (e.getActionCommand().equals("아이디 찾기")) {
-			
-		}
-		
-		else if (e.getActionCommand().equals("비밀번호 찾기")) {
-			
-		}
-		
 		
 	}
 	
 	public static void main(String[] args) {
-		new Login();
+		new SignIn();
 	}
-	
-	
+
+
 }
