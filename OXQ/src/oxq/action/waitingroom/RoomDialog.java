@@ -11,20 +11,20 @@ import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class MakeRoom extends JFrame implements ActionListener {
+public class RoomDialog extends JDialog implements ActionListener {
 	private JLabel makeRoom, roomTitle, roomPwd;
 	private JTextField roomT, roomP;
 	private JCheckBox secretRoom;
 	private JButton creatB, cancelB;
 
-	public MakeRoom() {
-		super("Room");
-
+	public RoomDialog(WaitingRoom wr, String title, boolean modal) {
+		super(wr, title, modal);
+		// JLabel 생성
 		// JLabel 생성
 		makeRoom = new JLabel("방 만들기");
 		roomTitle = new JLabel("방 제목");
@@ -57,18 +57,16 @@ public class MakeRoom extends JFrame implements ActionListener {
 		JPanel rbp = new JPanel();
 		rbp.add(creatB);
 		rbp.add(cancelB);
-		// rbp.setBorder(BorderFactory.createEmptyBorder(0 , 0 , 0 , 10));// 상 하 좌 우
 
 		JPanel gp = new JPanel(new GridLayout(4, 1));
 		gp.add(rmp);
 		gp.add(rtp);
 		gp.add(rpp);
 		gp.add(rbp);
-		add("Center", gp);
 
-		setBounds(480, 100, 300, 190);
-		setVisible(true);
-		setResizable(false);
+		this.getContentPane().add("Center", gp);
+		this.setBounds(830, 400, 300, 190);
+		this.setVisible(true);
 
 		// GUI 종료
 		addWindowListener(new WindowAdapter() {
@@ -89,7 +87,6 @@ public class MakeRoom extends JFrame implements ActionListener {
 					roomP.setEnabled(false);
 					roomP.setText("");
 				}
-
 			}
 		});
 
@@ -100,14 +97,10 @@ public class MakeRoom extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == creatB) {
-
+				
 		} else if (e.getSource() == cancelB) {
-			setVisible(false);
+		
 		}
-	}
-
-	public static void main(String[] args) {
-		new MakeRoom();
 	}
 
 }
