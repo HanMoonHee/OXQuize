@@ -15,8 +15,10 @@ import javax.mail.internet.MimeMessage;
 
 public class SMTPMailSendManager {
 
-	public static void main(String[] args) {
-		
+	public int randomNumber = 0; //인증번호 발생
+
+	
+	public SMTPMailSendManager() {
 		Properties p = System.getProperties();
 		p.put("mail.smtp.starttls.enable", "true"); //gmail은 무조건 true 고정
 		p.put("mail.smtp.host", "smtp.gmail.com"); //smtp 서버 주소
@@ -32,6 +34,8 @@ public class SMTPMailSendManager {
         Session session = Session.getDefaultInstance(p, auth);
         MimeMessage msg = new MimeMessage(session);
 
+        randomNumber = (int)(Math.random()*10000)+1;
+        
         try{
             //편지보낸시간
             msg.setSentDate(new Date());
@@ -51,7 +55,8 @@ public class SMTPMailSendManager {
             msg.setSubject("인증번호 확인해라2", "UTF-8");
              
             // 이메일 내용
-            msg.setText("너의 인증번호는 : + prNumber(이녀석으로 난수 발생시켜서 메일 보내자 ㄱㄱ) ", "UTF-8");
+            msg.setText("너의 인증번호는 : " + randomNumber , "UTF-8");
+            //System.out.println("너의 인증번호는 : " + randomNumber);
              
             // 이메일 헤더
             msg.setHeader("content-Type", "text/html");
@@ -64,6 +69,11 @@ public class SMTPMailSendManager {
         }catch (MessagingException msg_e) {
             msg_e.printStackTrace();
         }
+	}
+	
+	public static void main(String[] args) {
+		
+		SMTPMailSendManager smtpMailSendManager = new SMTPMailSendManager();
 
 		
 	}
@@ -87,6 +97,4 @@ class MyAuthentication extends Authenticator {
     public PasswordAuthentication getPasswordAuthentication() {
         return pa;
     }
-
-
 }
