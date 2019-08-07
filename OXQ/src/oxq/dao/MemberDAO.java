@@ -18,6 +18,7 @@ public class MemberDAO {
 	private Connection conn;
 	private PreparedStatement pstmt;
 	private ResultSet rs;
+	private String id;
 	
 	public static MemberDAO getInstance() {
 		if (instance == null) {
@@ -196,10 +197,34 @@ public class MemberDAO {
 			pstmt.close();
 			conn.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 		return list;
 	}
+
+	public void IncreaseLogin(String id) {
+		getConnection();
+		String sql = "update member set login = 1 where id=?";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			
+			pstmt.executeUpdate();
+			System.out.println("query문 거쳤음");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}	
+		
+	}
+
 		
 }
