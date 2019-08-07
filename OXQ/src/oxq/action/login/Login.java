@@ -6,7 +6,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import oxq.dao.MemberDAO;
 import oxq.dto.MemberDTO;
 
 public class Login extends JFrame implements ActionListener, Runnable{
@@ -23,7 +23,7 @@ public class Login extends JFrame implements ActionListener, Runnable{
 	private JTextField idT, pwdT;
 	private JButton signIN, signUP, idFindB, pwFindB;
 	
-//	private MemberDAO dao = MemberDAO.getInstance();
+	private MemberDAO dao = MemberDAO.getInstance();
 	private String nickName;
 	private boolean idCheck = false;
 	private boolean pwdCheck = false;
@@ -93,12 +93,7 @@ public class Login extends JFrame implements ActionListener, Runnable{
 			
 			if (idT.getText().length() > 0 && pwdT.getText().length() > 0) {
 				
-				
-				dto = new MemberDTO();
-				dto.setId("test");
-				dto.setPwd("1234");
-				
-				ArrayList<MemberDTO> list = new ArrayList<MemberDTO>();
+				ArrayList<MemberDTO> list = dao.Check();
 				for(MemberDTO dto : list) {//for each
 					if(dto.getId().equals(idT.getText())) {
 						nickName = idT.getText();
@@ -113,10 +108,11 @@ public class Login extends JFrame implements ActionListener, Runnable{
 					JOptionPane.showMessageDialog(this, "로그인 했습니다.", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
 					
 				} 
-				else if(!idCheck && idT.getText().length() > 0 && pwdT.getText().length() > 0) {
+				else if(!idCheck) {
+					
 					JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
 				}
-				else if(!pwdCheck && !idCheck && pwdT.getText().length() > 0) {
+				else if(!pwdCheck && !idCheck) {
 					JOptionPane.showMessageDialog(this, "비밀번호가 틀렸습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
@@ -130,11 +126,11 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		}
 		
 		else if (e.getActionCommand().equals("아이디 찾기")) {
-			
+			new IdFind();
 		}
 		
 		else if (e.getActionCommand().equals("비밀번호 찾기")) {
-			
+			new PwFind();
 		}
 		
 		

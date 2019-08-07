@@ -5,12 +5,10 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 
-public class IdFind extends JFrame implements ActionListener {
-	
-	
-	
-	public IdFind() {
-		super("아이디찾기");
+public class PwFind extends JFrame implements ActionListener {
+
+	public PwFind() {
+		super("비밀번호 찾기");
 		
 		
 		
@@ -20,8 +18,8 @@ public class IdFind extends JFrame implements ActionListener {
 		setResizable(false);
 	}
 	
-	   @Override
-	   public void actionPerformed(ActionEvent e) {
+	@Override
+	public void actionPerformed(ActionEvent e) {
 	      
-	   }
+	}
 }
