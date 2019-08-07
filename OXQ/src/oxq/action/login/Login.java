@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,11 +15,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import oxq.dto.MemberDTO;
+
 public class Login extends JFrame implements ActionListener, Runnable{
 	
 	private JLabel idL, pwdL;
 	private JTextField idT, pwdT;
 	private JButton signIN, signUP, idFindB, pwFindB;
+	
+//	private MemberDAO dao = MemberDAO.getInstance();
+	private String nickName;
+	private boolean idCheck = false;
+	private boolean pwdCheck = false;
+	private MemberDTO dto;
 	
 	public Login() {
 		setTitle("LOGIN");
@@ -74,10 +83,6 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		
 	}
 
-	private MemberDAO dao = MemberDAO.getInstance();
-	private String nickName;
-	
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("SIGN IN")) {
@@ -87,22 +92,44 @@ public class Login extends JFrame implements ActionListener, Runnable{
 			
 			if (pwdT.getText().length() <= 0 && idT.getText().length() > 0) {
 				JOptionPane.showMessageDialog(this, "비밀번호를 입력해주세요", "private", JOptionPane.INFORMATION_MESSAGE);
-			} else {
-				ArrayList<MemberDTO> list = dao.check(); //memberDTO를 list변수에 남아 dao와 check이벤트를 실행?
+			}
+			
+			if (idT.getText().length() > 0 && pwdT.getText().length() > 0) {
 				
-				for (MemberDTO dto : list) {
+				
+				dto = new MemberDTO();
+				dto.setId("test");
+				dto.setPwd("1234");
+				
+				ArrayList<MemberDTO> list = new ArrayList<MemberDTO>();
+				for(MemberDTO dto : list) {//for each
 					if(dto.getId().equals(idT.getText())) {
 						nickName = idT.getText();
-						
+						idCheck = true;
+					} 
+					if(dto.getPwd().equals(pwdT.getText())) {
+						pwdCheck = true;
 					}
 				}
+				
+				if(idCheck && pwdCheck) {
+					JOptionPane.showMessageDialog(this, "로그인 했습니다.", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
+					
+				} 
+				else if(!idCheck && idT.getText().length() > 0 && pwdT.getText().length() > 0) {
+					JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else if(!pwdCheck && !idCheck && pwdT.getText().length() > 0) {
+					JOptionPane.showMessageDialog(this, "비밀번호가 틀렸습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
+
 			
 			
 		}//로그인
 		
 		else if (e.getActionCommand().equals("회원가입")) {
-			
+			new SignUp();
 		}
 		
 		else if (e.getActionCommand().equals("아이디 찾기")) {
