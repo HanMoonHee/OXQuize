@@ -160,5 +160,46 @@ public class MemberDAO {
 		}
 		return arrayList;
 	}
+	
+	public ArrayList<MemberDTO> Check() { // 로그인 id,pw체크 || 회원가입 id 중복체크
+		getConnection();
+		
+		String sql = "select * from member";
+		ResultSet rs = null;
+		
+		ArrayList<MemberDTO> list = new ArrayList<MemberDTO>();
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				MemberDTO dto = new MemberDTO();
+				String id = rs.getString("id");
+				String pwd = rs.getString("pwd");
+				String email = rs.getString("email");
+				int login = rs.getInt("login");
+				int o_cnt=rs.getInt("o_cnt");
+				int x_cnt=rs.getInt("x_cnt");
+				int win_cnt=rs.getInt("win_cnt");
+				dto.setId(id);
+				dto.setPwd(pwd);
+				dto.setEmail(email);
+				dto.setLogin(login);
+				dto.setO_cnt(o_cnt);
+				dto.setX_cnt(x_cnt);
+				dto.setWin_cnt(win_cnt);
+			
+				list.add(dto);
+			}
+			rs.close();
+			pstmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
 		
 }
