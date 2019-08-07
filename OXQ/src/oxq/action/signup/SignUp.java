@@ -13,11 +13,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import oxq.dao.MemberDAO;
+import oxq.dto.MemberDTO;
+
 public class SignUp extends JFrame implements ActionListener {
 	private JLabel idL, pwdL, pwdCheckL, nameL, nickNameL, telL, emailL, hyphenL1, hyphenL2, golL;
 	private JTextField idT, pwdT, pwdCheckT, nameT, nickNameT, tel2T, tel3T, emailT;
 	private JComboBox<String> tel1C, emailC;
 	private JButton idB, emailB, addB, cancelB, clearB;
+	//private MemberDTO dto;
 
 	public SignUp() {
 		super("회원가입");
@@ -123,6 +127,7 @@ public class SignUp extends JFrame implements ActionListener {
 		cancelB.addActionListener(this);
 		clearB.addActionListener(this);
 	}
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -131,6 +136,15 @@ public class SignUp extends JFrame implements ActionListener {
 		} else if(e.getSource() == emailB) {	// 이메일 인증
 			
 		} else if(e.getSource() == addB) {	// 회원가입
+			MemberDTO dto = new MemberDTO();
+			dto.setId(idT.getText());
+			dto.setPwd(pwdT.getText());
+			dto.setTel(tel1C.getSelectedItem().toString() + hyphenL1.getText() + tel2T.getText() + hyphenL2.getText() +tel3T.getText());
+			dto.setEmail(emailT.getText() + golL.getText() + emailC.getSelectedItem().toString());
+			dto.setNickName(nickNameT.getText());
+			
+			MemberDAO dao = MemberDAO.getInstance();
+		
 			
 		} else if(e.getSource() == cancelB) {	// 가입취소
 			
