@@ -1,4 +1,4 @@
-package oxq.action.smtp;
+package oxq.action.login;
 
 import java.util.Date;
 import java.util.Properties;
@@ -52,11 +52,10 @@ public class SMTPMailSendManager {
             msg.setRecipient(Message.RecipientType.TO, to);
              
             // 이메일 제목
-            msg.setSubject("인증번호 확인해라2", "UTF-8");
+            msg.setSubject("인증번호를 확인하세요.", "UTF-8");
              
             // 이메일 내용
-            msg.setText("너의 인증번호는 : " + randomNumber , "UTF-8");
-            //System.out.println("너의 인증번호는 : " + randomNumber);
+            msg.setText("인증번호는 : " + randomNumber + "입니다." , "UTF-8");
              
             // 이메일 헤더
             msg.setHeader("content-Type", "text/html");
