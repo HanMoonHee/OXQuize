@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -22,7 +23,7 @@ public class SignUp extends JFrame implements ActionListener {
 	private JTextField idT, pwdT, pwdCheckT, nickNameT, tel2T, tel3T, emailT;
 	private JComboBox<String> tel1C, emailC;
 	private JButton idB, emailB, addB, cancelB, clearB;
-	private DefaultListModel<MemberDTO> model;
+	
 	//private MemberDTO dto;
 
 	public SignUp() {
@@ -147,7 +148,7 @@ public class SignUp extends JFrame implements ActionListener {
 			//아이디
 			String id = idT.getText();
 			//패스워드
-			String pwd = idT.getText();
+			String pwd = pwdT.getText();
 			//tel1c + tel2 + tel3 합치기
 			String tel = tel1C.getSelectedItem().toString() + hyphenL1.getText() + tel2T.getText() + hyphenL2.getText() +tel3T.getText();
 			//email + emailc 합치기
@@ -168,7 +169,14 @@ public class SignUp extends JFrame implements ActionListener {
 			int su = dao.insertOXQuiz(dto);
 			
 		} else if(e.getSource() == cancelB) {	// 가입취소
-			
+			ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
+			for (MemberDTO dto : arrayList) {
+				if(dto.equals(idT.getText())) {
+					System.out.println("이미 존재하는 아이디 입니다.");
+				}else {
+					System.out.println("사용가능한 아이디 입니다.");
+				}
+			}
 			setVisible(false);
 		} else if(e.getSource() == clearB) {	// 다시작성
 			clear();

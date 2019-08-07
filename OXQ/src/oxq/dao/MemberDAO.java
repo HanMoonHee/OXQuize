@@ -133,13 +133,32 @@ public class MemberDAO {
 	}
 	
 	public ArrayList<MemberDTO> getMemberList() {
-		ArrayList<>
-		ArrayList sql = "select id from member";
+		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
+		String sql = "select id from member";
 		getConnection();
 		
-		pstmt = conn.prepareStatement(sql);
-		rs = pstmt.executeQuery();
-		
-		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				MemberDTO dto = new MemberDTO();
+				dto.setId(rs.getString("id"));
+				
+				arrayList.add(dto);
+			}//while
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return arrayList;
 	}
+		
 }
