@@ -130,7 +130,6 @@ public class SignUp extends JFrame implements ActionListener {
 		clearB.addActionListener(this);
 	}
 	
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == idB) {	// 중복확인
@@ -160,10 +159,6 @@ public class SignUp extends JFrame implements ActionListener {
 		} else if(e.getSource() == clearB) {	// 다시작성
 			
 		}
-	}
-	
-	public static void main(String[] args) {
-		new SignUp().event();
 	}
 	
 }

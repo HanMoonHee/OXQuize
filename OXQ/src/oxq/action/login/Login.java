@@ -44,14 +44,14 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		pn2.add(pwdT);
 		
 		JPanel pn3 = new JPanel();
-		signIN = new JButton("SIGN IN");
-		signUP = new JButton("SIGN UP");
+		signIN = new JButton("로그인");
+		signUP = new JButton("회원가입");
 		pn3.add(signIN);
 		pn3.add(signUP);
 		
 		JPanel pn4 = new JPanel();
-		idFindB = new JButton("ID SEARCH");
-		pwFindB = new JButton("PASSWORD SEARCH");
+		idFindB = new JButton("아이디 찾기");
+		pwFindB = new JButton("비밀번호 찾기");
 		pn4.add(idFindB);
 		pn4.add(pwFindB);
 		
@@ -71,21 +71,18 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+	}
+	
+	public void event() {
 		signIN.addActionListener(this);
 		signUP.addActionListener(this);
 		idFindB.addActionListener(this);
 		pwFindB.addActionListener(this);
 	}
-	
-	@Override
-	public void run() {
-		
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals("SIGN IN")) {
+		if(e.getSource()==signIN) {
 			if(idT.getText().length()<=0) {
 				JOptionPane.showMessageDialog(this, "아이디를 입력해주세요", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -128,8 +125,8 @@ public class Login extends JFrame implements ActionListener, Runnable{
 			
 		}//로그인
 		
-		else if (e.getActionCommand().equals("회원가입")) {
-			new SignUp();
+		else if (e.getSource()==signUP) {
+			new SignUp().event();
 		}
 		
 		else if (e.getActionCommand().equals("아이디 찾기")) {
@@ -143,8 +140,13 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		
 	}
 	
+	@Override
+	public void run() {
+		
+	}
+	
 	public static void main(String[] args) {
-		new Login();
+		new Login().event();
 	}
 	
 	

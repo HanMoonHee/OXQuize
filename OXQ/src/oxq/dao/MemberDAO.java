@@ -50,7 +50,7 @@ public class MemberDAO {
 	public int insertOXQuiz(MemberDTO dto) {
 		int su = 0;
 		getConnection();
-		String sql = "insert into member values(?, ?, ?, ?, ?, ?)";
+		String sql = "insert into member(id, pwd, nickname, tel, email) values(?, ?, ?, ?, ?)";
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, dto.getId());
@@ -58,7 +58,7 @@ public class MemberDAO {
 			pstmt.setString(3, dto.getNickName());
 			pstmt.setString(4, dto.getTel());
 			pstmt.setString(5, dto.getEmail());
-			pstmt.setInt(6, 0);
+
 			
 			su = pstmt.executeUpdate();
 		} catch (SQLException e) {
