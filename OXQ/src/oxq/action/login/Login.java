@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import oxq.action.waitingroom.WaitingRoom;
 import oxq.dao.MemberDAO;
 import oxq.dto.MemberDTO;
 
@@ -28,6 +29,7 @@ public class Login extends JFrame implements ActionListener, Runnable{
 	private boolean idCheck = false;
 	private boolean pwdCheck = false;
 	private MemberDTO dto;
+	
 	
 	public Login() {
 		setTitle("LOGIN");
@@ -106,6 +108,11 @@ public class Login extends JFrame implements ActionListener, Runnable{
 				
 				if(idCheck && pwdCheck) {
 					JOptionPane.showMessageDialog(this, "로그인 했습니다.", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
+					
+					dao.IncreaseLogin(nickName);
+					WaitingRoom waitingRoom = new WaitingRoom();
+					
+					
 					
 				} 
 				else if(!idCheck) {

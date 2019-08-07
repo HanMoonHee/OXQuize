@@ -3,7 +3,7 @@ package oxq.dto;
 public class MemberDTO {
 	private String id; // 회원 아이디
 	private String pwd; // 회원 비밀번호
-	private String nickName; // 회원 닉네임
+	private String nickName; // 컨펌아이디
 	private String email; // 회원 이메일
 	private String tel;
 	private int login; // 로그인 여부(로그인 하면 1 아니면 0)
