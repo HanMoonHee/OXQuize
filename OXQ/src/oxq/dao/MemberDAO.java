@@ -12,7 +12,7 @@ public class MemberDAO {
 	private static MemberDAO instance;
 	private String driver = "oracle.jdbc.driver.OracleDriver";
 	private String url = "jdbc:oracle:thin:@localhost:1521:xe";
-	private String user = "OXQuiz";
+	private String user = "java";
 	private String password = "dkdlxl";
 	private Connection conn;
 	private PreparedStatement pstmt;
@@ -50,7 +50,7 @@ public class MemberDAO {
 	public int insertOXQuiz(MemberDTO dto) {
 		int su = 0;
 		getConnection();
-		String sql = "insert into member values(?, ?, ?, ?, ?)";
+		String sql = "insert into member values(?, ?, ?, ?, ?, ?)";
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, dto.getId());
@@ -58,6 +58,9 @@ public class MemberDAO {
 			pstmt.setString(3, dto.getNickName());
 			pstmt.setString(4, dto.getTel());
 			pstmt.setString(5, dto.getEmail());
+			pstmt.setInt(6, 0);
+			
+			su = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

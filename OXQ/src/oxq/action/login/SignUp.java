@@ -144,15 +144,16 @@ public class SignUp extends JFrame implements ActionListener {
 			//email + emailc 합치기
 			String email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
 			
-			
 			dto.setId(idT.getText());
 			dto.setPwd(pwdT.getText());
 			dto.setTel(tel);
 			dto.setEmail(email);
 			dto.setNickName(nickNameT.getText());
 			
+			
 			System.out.println(dto.getId() + dto.getPwd() + dto.getNickName() + dto.getTel() + dto.getEmail());
 			MemberDAO dao = MemberDAO.getInstance();
+			int su = dao.insertOXQuiz(dto);
 			
 		} else if(e.getSource() == cancelB) {	// 가입취소
 			
