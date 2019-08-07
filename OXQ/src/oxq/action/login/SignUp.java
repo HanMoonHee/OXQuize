@@ -18,8 +18,8 @@ import oxq.dao.MemberDAO;
 import oxq.dto.MemberDTO;
 
 public class SignUp extends JFrame implements ActionListener {
-	private JLabel idL, pwdL, pwdCheckL, nameL, nickNameL, telL, emailL, hyphenL1, hyphenL2, golL;
-	private JTextField idT, pwdT, pwdCheckT, nameT, nickNameT, tel2T, tel3T, emailT;
+	private JLabel idL, pwdL, pwdCheckL, nickNameL, telL, emailL, hyphenL1, hyphenL2, golL;
+	private JTextField idT, pwdT, pwdCheckT, nickNameT, tel2T, tel3T, emailT;
 	private JComboBox<String> tel1C, emailC;
 	private JButton idB, emailB, addB, cancelB, clearB;
 	private DefaultListModel<MemberDTO> model;
@@ -31,7 +31,6 @@ public class SignUp extends JFrame implements ActionListener {
 		idL = new JLabel("    아이디  :    ");
 		pwdL = new JLabel("    비밀번호 : ");
 		pwdCheckL = new JLabel("    비밀번호확인 :");
-		nameL = new JLabel("    이름 :     ");
 		nickNameL = new JLabel("    닉네임 : ");
 		telL = new JLabel("    전화번호 : ");
 		emailL = new JLabel("    이메일 : ");
@@ -42,7 +41,6 @@ public class SignUp extends JFrame implements ActionListener {
 		idT = new JTextField(10);
 		pwdT = new JTextField(10);
 		pwdCheckT = new JTextField(10);
-		nameT = new JTextField(10);
 		nickNameT = new JTextField(10);
 		tel2T = new JTextField(5);
 		tel3T = new JTextField(5);
@@ -73,9 +71,6 @@ public class SignUp extends JFrame implements ActionListener {
 		pwdCP.add(pwdCheckL);
 		pwdCP.add(pwdCheckT);
 
-		JPanel nameP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 이름
-		nameP.add(nameL);
-		nameP.add(nameT);
 
 		JPanel nickNameP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 닉네임
 		nickNameP.add(nickNameL);
@@ -103,11 +98,10 @@ public class SignUp extends JFrame implements ActionListener {
 		buttonP2.add(clearB);
 		buttonP.add(buttonP2);
 
-		JPanel centerP = new JPanel(new GridLayout(7, 1, 0, 0));
+		JPanel centerP = new JPanel(new GridLayout(6, 1, 0, 0));
 		centerP.add(idP);
 		centerP.add(pwdP);
 		centerP.add(pwdCP);
-		centerP.add(nameP);
 		centerP.add(nickNameP);
 		centerP.add(telP);
 		centerP.add(emailP);
@@ -130,6 +124,18 @@ public class SignUp extends JFrame implements ActionListener {
 		clearB.addActionListener(this);
 	}
 	
+	public void clear() {
+		idT.setText("");
+		pwdT.setText("");
+		pwdCheckT.setText("");
+		nickNameT.setText("");
+		tel1C.setSelectedItem("010");
+		tel2T.setText("");
+		tel3T.setText("");
+		emailT.setText("");
+		emailC.setSelectedItem("naver.com");
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == idB) {	// 중복확인
@@ -138,16 +144,23 @@ public class SignUp extends JFrame implements ActionListener {
 			
 		} else if(e.getSource() == addB) {	// 회원가입
 			MemberDTO dto = new MemberDTO();
+			//아이디
+			String id = idT.getText();
+			//패스워드
+			String pwd = idT.getText();
 			//tel1c + tel2 + tel3 합치기
 			String tel = tel1C.getSelectedItem().toString() + hyphenL1.getText() + tel2T.getText() + hyphenL2.getText() +tel3T.getText();
 			//email + emailc 합치기
 			String email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
+			//닉네임 
+			String nickName = nickNameT.getText();
 			
-			dto.setId(idT.getText());
-			dto.setPwd(pwdT.getText());
+			
+			dto.setId(id);
+			dto.setPwd(pwd);
 			dto.setTel(tel);
 			dto.setEmail(email);
-			dto.setNickName(nickNameT.getText());
+			dto.setNickName(nickName);
 			
 			
 			System.out.println(dto.getId() + dto.getPwd() + dto.getNickName() + dto.getTel() + dto.getEmail());
@@ -156,8 +169,9 @@ public class SignUp extends JFrame implements ActionListener {
 			
 		} else if(e.getSource() == cancelB) {	// 가입취소
 			
+			setVisible(false);
 		} else if(e.getSource() == clearB) {	// 다시작성
-			
+			clear();
 		}
 	}
 	

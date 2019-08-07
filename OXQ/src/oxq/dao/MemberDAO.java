@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import oxq.dto.MemberDTO;
 
@@ -80,16 +81,16 @@ public class MemberDAO {
 	public int updateOXQuiz(MemberDTO dto) {
 		int su = 0;
 		getConnection();
-		String sql = "update member set pwd = ?,"
-				+ "tel = ?,"
+		String sql = "update member set pwd = ?"
 				+ "nickname = ?,"
+				+ "tel = ?,"
 				+ "email = ?";
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, dto.getPwd());
-			pstmt.setString(2, dto.getTel());
-			pstmt.setString(3, dto.getNickName());
+			pstmt.setString(2, dto.getNickName());
+			pstmt.setString(3, dto.getTel());
 			pstmt.setString(4, dto.getEmail());
 			
 			su = pstmt.executeUpdate();
@@ -129,5 +130,16 @@ public class MemberDAO {
 		}
 		
 		return su;
+	}
+	
+	public ArrayList<MemberDTO> getMemberList() {
+		ArrayList<>
+		ArrayList sql = "select id from member";
+		getConnection();
+		
+		pstmt = conn.prepareStatement(sql);
+		rs = pstmt.executeQuery();
+		
+		
 	}
 }
