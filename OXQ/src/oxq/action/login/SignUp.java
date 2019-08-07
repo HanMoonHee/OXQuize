@@ -1,4 +1,4 @@
-package oxq.action.signup;
+package oxq.action.login;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -21,6 +22,7 @@ public class SignUp extends JFrame implements ActionListener {
 	private JTextField idT, pwdT, pwdCheckT, nameT, nickNameT, tel2T, tel3T, emailT;
 	private JComboBox<String> tel1C, emailC;
 	private JButton idB, emailB, addB, cancelB, clearB;
+	private DefaultListModel<MemberDTO> model;
 	//private MemberDTO dto;
 
 	public SignUp() {
@@ -137,14 +139,20 @@ public class SignUp extends JFrame implements ActionListener {
 			
 		} else if(e.getSource() == addB) {	// 회원가입
 			MemberDTO dto = new MemberDTO();
+			//tel1c + tel2 + tel3 합치기
+			String tel = tel1C.getSelectedItem().toString() + hyphenL1.getText() + tel2T.getText() + hyphenL2.getText() +tel3T.getText();
+			//email + emailc 합치기
+			String email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
+			
+			
 			dto.setId(idT.getText());
 			dto.setPwd(pwdT.getText());
-			dto.setTel(tel1C.getSelectedItem().toString() + hyphenL1.getText() + tel2T.getText() + hyphenL2.getText() +tel3T.getText());
-			dto.setEmail(emailT.getText() + golL.getText() + emailC.getSelectedItem().toString());
+			dto.setTel(tel);
+			dto.setEmail(email);
 			dto.setNickName(nickNameT.getText());
 			
+			System.out.println(dto.getId() + dto.getPwd() + dto.getNickName() + dto.getTel() + dto.getEmail());
 			MemberDAO dao = MemberDAO.getInstance();
-		
 			
 		} else if(e.getSource() == cancelB) {	// 가입취소
 			
