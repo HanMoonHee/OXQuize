@@ -98,7 +98,7 @@ public class Login extends JFrame implements ActionListener {
 					JOptionPane.showMessageDialog(this, "로그인 성공!!", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
 					dao.LoginFlag(id);	// 로그인 1로 바꿔주기
 					dto = dao.loginDTO(id);
-					//new WaitingRoom(dto).service();
+					new WaitingRoom(dto).service();
 					
 					setVisible(false);
 					
