@@ -44,7 +44,7 @@ public class SMTPMailSendPassword {
         list = dao.getMemberList();
 
 		for(MemberDTO dto : list) {
-			if(id.equals(dto.getId()) && email.equals(dto.getEmail())) {
+			if(id.equals(dto.getId())) {
 				searchPassword = dto.getPwd();
 			}
 		}
@@ -72,7 +72,7 @@ public class SMTPMailSendPassword {
              
             // 이메일 헤더
             msg.setHeader("content-Type", "text/html");
-             
+            
             //메일보내기
             javax.mail.Transport.send(msg);
              
