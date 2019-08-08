@@ -31,6 +31,7 @@ public class MemberDAO {
 	public MemberDAO() {
 		try {
 			Class.forName(driver);
+			System.out.println("드라이버 로딩성공");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -39,6 +40,7 @@ public class MemberDAO {
 	public void getConnection() {
 		try {
 			conn = DriverManager.getConnection(url, user, password);
+			System.out.println("접속 성공");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -73,20 +75,20 @@ public class MemberDAO {
 		return su;
 	}
 	
-	// 회원 정보 수정
 	public int updateMember(MemberDTO dto) {
 		int su = 0;
 		getConnection();
-		String sql = "update member set pwd = ?"
+		String sql = "update member set pwd = ?,"
 				+ "nickname = ?,"
 				+ "tel = ?,"
-				+ "email = ?";
+				+ "email = ? where id = ?";
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, dto.getPwd());
 			pstmt.setString(2, dto.getNickName());
 			pstmt.setString(3, dto.getTel());
 			pstmt.setString(4, dto.getEmail());
+			pstmt.setString(5, dto.getId());
 			
 			su = pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -102,7 +104,7 @@ public class MemberDAO {
 		return su;
 	}
 	
-	// 회원 정보 삭제
+	//회원정보 삭제
 	public int deleteMember(String id) {
 		int su = 0;
 		getConnection();
@@ -200,6 +202,7 @@ public class MemberDAO {
 				dto.setId(rs.getString("id"));
 				dto.setPwd(rs.getString("pwd"));
 				dto.setNickName(rs.getString("nickName"));
+				dto.setTel(rs.getString("tel"));
 				dto.setEmail(rs.getString("email"));
 				dto.setLogin(rs.getInt("login"));
 				dto.setO_cnt(rs.getInt("o_cnt"));
@@ -237,6 +240,7 @@ public class MemberDAO {
 				dto.setPwd(rs.getString("pwd"));
 				dto.setNickName(rs.getString("nickName"));
 				dto.setEmail(rs.getString("email"));
+				dto.setTel(rs.getString("tel"));
 				dto.setLogin(rs.getInt("login"));
 				dto.setO_cnt(rs.getInt("o_cnt"));
 				dto.setX_cnt(rs.getInt("x_cnt"));
@@ -340,33 +344,71 @@ public class MemberDAO {
 		return su;
 	}
 	
-	public ArrayList<MemberDTO> getId(String id) { // 아이디 중복체크 때 사용
-	      ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
-	      String sql = "select id from member where id = ?";
-	      getConnection();
-	      
-	      try {
-	         pstmt = conn.prepareStatement(sql);
-	         pstmt.setString(1, id);
-	         rs = pstmt.executeQuery();
-	         
-	         while(rs.next()) {
-	            MemberDTO dto = new MemberDTO();
-	            dto.setId(rs.getString("id"));
-	            
-	            arrayList.add(dto);
-	         }//while
-	      } catch (SQLException e) {
-	         e.printStackTrace();
-	      } finally {
-	         try {
-	            if(rs != null) rs.close();
-	            if(pstmt != null) pstmt.close();
-	            if(conn != null) conn.close();
-	         } catch (SQLException e) {
-	            e.printStackTrace();
-	         }
-	      }
-	      return arrayList;
-	   }	
+	public ArrayList<MemberDTO> getId(String id) {
+		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
+		String sql = "select id from member where id = ?";
+		getConnection();
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				MemberDTO dto = new MemberDTO();
+				dto.setId(rs.getString("id"));
+				
+				arrayList.add(dto);
+			}//while
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return arrayList;
+	}
+
+	public MemberDTO getIdLIst(MemberDTO dto) {
+	
+		getConnection();
+		String sql = "select * from member where id = ?";
+		System.out.println(dto.getId());
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, dto.getId());
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				dto.setId(rs.getString("id"));
+				dto.setPwd(rs.getString("pwd"));
+				dto.setNickName(rs.getString("nickName"));
+				dto.setEmail(rs.getString("email"));
+				dto.setLogin(rs.getInt("login"));
+				dto.setO_cnt(rs.getInt("o_cnt"));
+				dto.setX_cnt(rs.getInt("x_cnt"));
+				dto.setWin_cnt(rs.getInt("win_cnt"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}		
+		return dto;
+		
+	}
+	
+		
 }
