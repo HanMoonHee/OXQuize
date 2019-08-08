@@ -166,7 +166,7 @@ public class SignUp extends JFrame implements ActionListener {
 			
 			System.out.println(dto.getId() + dto.getPwd() + dto.getNickName() + dto.getTel() + dto.getEmail());
 			MemberDAO dao = MemberDAO.getInstance();
-			int su = dao.insertOXQuiz(dto);
+			int su = dao.insertMember(dto);
 			
 		} else if(e.getSource() == cancelB) {	// 가입취소
 			ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();

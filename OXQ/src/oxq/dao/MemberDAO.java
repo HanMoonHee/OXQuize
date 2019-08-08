@@ -11,6 +11,15 @@ import oxq.dto.MemberDTO;
 
 public class MemberDAO {
 	private static MemberDAO instance;
+	public static MemberDAO getInstance() {
+		if (instance == null) {
+			synchronized (MemberDAO.class) {
+				instance = new MemberDAO();
+			}
+		}
+		return instance;
+	}
+
 	private String driver = "oracle.jdbc.driver.OracleDriver";
 	private String url = "jdbc:oracle:thin:@localhost:1521:xe";
 	private String user = "java";
@@ -18,18 +27,6 @@ public class MemberDAO {
 	private Connection conn;
 	private PreparedStatement pstmt;
 	private ResultSet rs;
-	private String id;
-	
-	public static MemberDAO getInstance() {
-		if (instance == null) {
-			synchronized (MemberDAO.class) {
-				instance = new MemberDAO();
-			}
-
-		}
-
-		return instance;
-	}
 	
 	public MemberDAO() {
 		try {
@@ -39,7 +36,7 @@ public class MemberDAO {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void getConnection() {
 		try {
 			conn = DriverManager.getConnection(url, user, password);
@@ -49,7 +46,7 @@ public class MemberDAO {
 		}
 	}
 	
-	public int insertOXQuiz(MemberDTO dto) {
+	public int insertMember(MemberDTO dto) {
 		int su = 0;
 		getConnection();
 		String sql = "insert into member(id, pwd, nickname, tel, email) values(?, ?, ?, ?, ?)";
@@ -60,9 +57,9 @@ public class MemberDAO {
 			pstmt.setString(3, dto.getNickName());
 			pstmt.setString(4, dto.getTel());
 			pstmt.setString(5, dto.getEmail());
-
 			
 			su = pstmt.executeUpdate();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -74,19 +71,16 @@ public class MemberDAO {
 				e.printStackTrace();
 			}
 		}
-		
 		return su;
-		
 	}
 	
-	public int updateOXQuiz(MemberDTO dto) {
+	public int updateMember(MemberDTO dto) {
 		int su = 0;
 		getConnection();
 		String sql = "update member set pwd = ?"
 				+ "nickname = ?,"
 				+ "tel = ?,"
 				+ "email = ?";
-		
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, dto.getPwd());
@@ -105,18 +99,17 @@ public class MemberDAO {
 				e.printStackTrace();
 			}
 		}
-		
 		return su;
 	}
 	
-	public int deleteOXQuiz(int id) {
+	public int deleteMember(String id) {
 		int su = 0;
 		getConnection();
 		String sql = "delete Member where id = ?";
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, id);
+			pstmt.setString(1, id);
 			
 			su = pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -129,7 +122,6 @@ public class MemberDAO {
 				e.printStackTrace();
 			}
 		}
-		
 		return su;
 	}
 	
@@ -163,55 +155,62 @@ public class MemberDAO {
 	}
 	
 	public ArrayList<MemberDTO> Check() { // 로그인 id,pw체크 || 회원가입 id 중복체크
-		getConnection();
-		
+		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
+		getConnection();		
 		String sql = "select * from member";
-		ResultSet rs = null;
-		
-		ArrayList<MemberDTO> list = new ArrayList<MemberDTO>();
-		
+
 		try {
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			
 			while (rs.next()) {
 				MemberDTO dto = new MemberDTO();
-				String id = rs.getString("id");
-				String pwd = rs.getString("pwd");
-				String email = rs.getString("email");
-				int login = rs.getInt("login");
-				int o_cnt=rs.getInt("o_cnt");
-				int x_cnt=rs.getInt("x_cnt");
-				int win_cnt=rs.getInt("win_cnt");
-				dto.setId(id);
-				dto.setPwd(pwd);
-				dto.setEmail(email);
-				dto.setLogin(login);
-				dto.setO_cnt(o_cnt);
-				dto.setX_cnt(x_cnt);
-				dto.setWin_cnt(win_cnt);
+				
+				dto.setId(rs.getString("id"));
+				dto.setPwd(rs.getString("pwd"));
+				dto.setNickName(rs.getString("nickName"));
+				dto.setEmail(rs.getString("email"));
+				dto.setLogin(rs.getInt("login"));
+				dto.setO_cnt(rs.getInt("o_cnt"));
+				dto.setX_cnt(rs.getInt("x_cnt"));
+				dto.setWin_cnt(rs.getInt("win_cnt"));
 			
-				list.add(dto);
+				arrayList.add(dto);
 			}
-			rs.close();
-			pstmt.close();
-			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} 
-		return list;
+		} finally {
+			try { // 종료
+				if (rs != null)	rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return arrayList;
 	}
-
-	public void IncreaseLogin(String id) {
+	public MemberDTO loginDTO(String id) {	// 로그인한 회원의 정보 객체
+		MemberDTO dto = new MemberDTO();
 		getConnection();
-		String sql = "update member set login = 1 where id=?";
+		String sql = "select * from member where id = ?";
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
 			
-			pstmt.executeUpdate();
-			System.out.println("query문 거쳤음");
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				dto.setId(rs.getString("id"));
+				dto.setPwd(rs.getString("pwd"));
+				dto.setNickName(rs.getString("nickName"));
+				dto.setEmail(rs.getString("email"));
+				dto.setLogin(rs.getInt("login"));
+				dto.setO_cnt(rs.getInt("o_cnt"));
+				dto.setX_cnt(rs.getInt("x_cnt"));
+				dto.setWin_cnt(rs.getInt("win_cnt"));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -222,9 +221,94 @@ public class MemberDAO {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}	
-		
+		}		
+		return dto;
 	}
+	
+	public int login(String id, String pwd) { // 로그인 체크  성공 1, 비밀번호 틀림 0, 아이디 없음 -1
+		int flag = 0;
+		getConnection();
+		String sql = "select pwd from member where id = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			
+			rs = pstmt.executeQuery();
+			
+			
+			if(rs.next()) {
+				// 패스워드 일치한다면
+				if(rs.getString(1).equals(pwd)) {
+					flag = 1;	//로그인 성공
+				} else 
+					flag = 0;	//비밀번호 불일치
+			} else {
+				flag = -1; // 아이디 없음
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}				
+		return flag;
+	}
+	
+	public int LoginFlag(String id) {	// 로그인 하면 login 상태 1로 update
+		int su = 0;
+		getConnection();
+		String sql = "update member set login = ? where id = ?";
 
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, 1);
+			pstmt.setString(2, id);
+			
+			su = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}				
+		return su;
+	}
+	
+	public int LogoutFlag(String id) {	// 로그아웃 하면 login 상태 0로 update
+		int su = 0;
+		getConnection();
+		String sql = "update member set login = ? where id = ?";
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, 0);
+			pstmt.setString(2, id);
+			
+			su = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}				
+		return su;
+	}
 		
 }

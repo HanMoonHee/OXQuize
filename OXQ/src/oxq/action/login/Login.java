@@ -18,19 +18,17 @@ import oxq.action.waitingroom.WaitingRoom;
 import oxq.dao.MemberDAO;
 import oxq.dto.MemberDTO;
 
-public class Login extends JFrame implements ActionListener, Runnable{
-	
+public class Login extends JFrame implements ActionListener {
 	private JLabel idL, pwdL;
 	private JTextField idT, pwdT;
 	private JButton signIN, signUP, idFindB, pwFindB;
-	
-	private MemberDAO dao = MemberDAO.getInstance();
-	private String nickName;
+
+	private MemberDTO dto;
+	private String id;
+	private String pwd;
 	private boolean idCheck = false;
 	private boolean pwdCheck = false;
-	private MemberDTO dto;
-	
-	
+
 	public Login() {
 		setTitle("LOGIN");
 		JPanel pn1 = new JPanel();
@@ -38,19 +36,19 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		idT = new JTextField(15);
 		pn1.add(idL);
 		pn1.add(idT);
-		
+
 		JPanel pn2 = new JPanel();
 		pwdL = new JLabel("PASSWORD : ");
 		pwdT = new JTextField(15);
 		pn2.add(pwdL);
 		pn2.add(pwdT);
-		
+
 		JPanel pn3 = new JPanel();
 		signIN = new JButton("로그인");
 		signUP = new JButton("회원가입");
 		pn3.add(signIN);
 		pn3.add(signUP);
-		
+
 		JPanel pn4 = new JPanel();
 		idFindB = new JButton("아이디 찾기");
 		pwFindB = new JButton("비밀번호 찾기");
@@ -68,8 +66,8 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		
 		Container contentPane = this.getContentPane();
 		contentPane.add("Center", alignP);
-		
-		setBounds(50, 50, 800, 600);
+
+		setBounds(480, 150, 800, 600);
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -83,52 +81,38 @@ public class Login extends JFrame implements ActionListener, Runnable{
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(e.getSource()==signIN) {
-			if(idT.getText().length()<=0) {
+	public void actionPerformed(ActionEvent e) {		
+		MemberDAO dao = MemberDAO.getInstance();
+		
+		if (e.getSource() == signIN) {
+			id = idT.getText();
+			pwd = pwdT.getText();
+			System.out.println(id +": " +pwd);
+			if(idT.getText() == null || idT.getText() == "") {	// 아이디 입력 안했을때
 				JOptionPane.showMessageDialog(this, "아이디를 입력해주세요", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
-			}
-			
-			if (pwdT.getText().length() <= 0 && idT.getText().length() > 0) {
-				JOptionPane.showMessageDialog(this, "비밀번호를 입력해주세요", "private", JOptionPane.INFORMATION_MESSAGE);
-			}
-			
-			if (idT.getText().length() > 0 && pwdT.getText().length() > 0) {
-				
-				ArrayList<MemberDTO> list = dao.Check();
-				for(MemberDTO dto : list) {//for each
-					if(dto.getId().equals(idT.getText())) {
-						nickName = idT.getText();
-						idCheck = true;
-					} 
-					if(dto.getPwd().equals(pwdT.getText())) {
-						pwdCheck = true;
-					}
-				}
-				
-				if(idCheck && pwdCheck) {
-					JOptionPane.showMessageDialog(this, "로그인 했습니다.", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
+			} else if (pwdT.getText() == null || pwdT.getText() == "") { // 비번 입력 안했을때
+				JOptionPane.showMessageDialog(this, "비밀번호를 입력해주세요", "private", JOptionPane.INFORMATION_MESSAGE);				
+			} else { // 아이디 비번 입력 되어있을때
+				int flag = dao.login(id, pwd);
+				if(flag == 1) { //로그인 성공
+					JOptionPane.showMessageDialog(this, "로그인 성공!!", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
+					dao.LoginFlag(id);	// 로그인 1로 바꿔주기
+					dto = dao.loginDTO(id);
+					//new WaitingRoom(dto).service();
 					
-					dao.IncreaseLogin(nickName);
-					WaitingRoom waitingRoom = new WaitingRoom();
+					setVisible(false);
 					
-					
-					
-				} 
-				else if(!idCheck) {
-					
-					JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
-				}
-				else if(!pwdCheck && !idCheck) {
+				} else if(flag == 0) { //비밀번호 틀림
 					JOptionPane.showMessageDialog(this, "비밀번호가 틀렸습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+				} else if(flag == -1) {	//아이디 없음
+					JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 
-			
-			
-		}//로그인
-		
-		else if (e.getSource()==signUP) {
+
+		} // 로그인
+
+		else if (e.getSource() == signUP) {
 			new SignUp().event();
 		}
 		
@@ -142,15 +126,10 @@ public class Login extends JFrame implements ActionListener, Runnable{
 		
 		
 	}
-	
-	@Override
-	public void run() {
-		
-	}
-	
+
+
 	public static void main(String[] args) {
 		new Login().event();
 	}
-	
-	
+
 }
