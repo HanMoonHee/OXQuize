@@ -31,7 +31,6 @@ public class MemberDAO {
 	public MemberDAO() {
 		try {
 			Class.forName(driver);
-			System.out.println("드라이버 로딩성공");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -40,12 +39,12 @@ public class MemberDAO {
 	public void getConnection() {
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-			System.out.println("접속 성공");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
+	// 회원 추가
 	public int insertMember(MemberDTO dto) {
 		int su = 0;
 		getConnection();
@@ -74,6 +73,7 @@ public class MemberDAO {
 		return su;
 	}
 	
+	// 회원 정보 수정
 	public int updateMember(MemberDTO dto) {
 		int su = 0;
 		getConnection();
@@ -102,6 +102,7 @@ public class MemberDAO {
 		return su;
 	}
 	
+	// 회원 정보 삭제
 	public int deleteMember(String id) {
 		int su = 0;
 		getConnection();
@@ -125,7 +126,8 @@ public class MemberDAO {
 		return su;
 	}
 	
-	public ArrayList<MemberDTO> getMemberList() {
+	// 전체 id
+	public ArrayList<MemberDTO> getIdList() {
 		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
 		String sql = "select id from member";
 		getConnection();
@@ -154,7 +156,8 @@ public class MemberDAO {
 		return arrayList;
 	}
 	
-	public ArrayList<MemberDTO> Check() { // 로그인 id,pw체크 || 회원가입 id 중복체크
+	// 회원 전체 정보
+	public ArrayList<MemberDTO> getMemberList() {
 		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
 		getConnection();		
 		String sql = "select * from member";
@@ -236,7 +239,6 @@ public class MemberDAO {
 			
 			rs = pstmt.executeQuery();
 			
-			
 			if(rs.next()) {
 				// 패스워드 일치한다면
 				if(rs.getString(1).equals(pwd)) {
@@ -271,7 +273,6 @@ public class MemberDAO {
 			pstmt.setString(2, id);
 			
 			su = pstmt.executeUpdate();
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -310,5 +311,34 @@ public class MemberDAO {
 		}				
 		return su;
 	}
-		
+	
+	public ArrayList<MemberDTO> getId(String id) { // 아이디 중복체크 때 사용
+	      ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
+	      String sql = "select id from member where id = ?";
+	      getConnection();
+	      
+	      try {
+	         pstmt = conn.prepareStatement(sql);
+	         pstmt.setString(1, id);
+	         rs = pstmt.executeQuery();
+	         
+	         while(rs.next()) {
+	            MemberDTO dto = new MemberDTO();
+	            dto.setId(rs.getString("id"));
+	            
+	            arrayList.add(dto);
+	         }//while
+	      } catch (SQLException e) {
+	         e.printStackTrace();
+	      } finally {
+	         try {
+	            if(rs != null) rs.close();
+	            if(pstmt != null) pstmt.close();
+	            if(conn != null) conn.close();
+	         } catch (SQLException e) {
+	            e.printStackTrace();
+	         }
+	      }
+	      return arrayList;
+	   }	
 }
