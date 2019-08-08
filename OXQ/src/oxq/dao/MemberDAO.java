@@ -125,10 +125,10 @@ public class MemberDAO {
 		return su;
 	}
 	
-	public ArrayList<MemberDTO> getMemberList() {
+	public ArrayList<MemberDTO> getIdrList() {
 		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
-		String sql = "select id from member";
 		getConnection();
+		String sql = "select id from member";
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -154,7 +154,7 @@ public class MemberDAO {
 		return arrayList;
 	}
 	
-	public ArrayList<MemberDTO> Check() { // 로그인 id,pw체크 || 회원가입 id 중복체크
+	public ArrayList<MemberDTO> getMemberList() { // 로그인 id,pw체크 || 회원가입 id 중복체크
 		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
 		getConnection();		
 		String sql = "select * from member";
