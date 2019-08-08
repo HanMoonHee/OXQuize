@@ -156,13 +156,11 @@ public class SignUp extends JFrame implements ActionListener {
 			//닉네임 
 			String nickName = nickNameT.getText();
 			
-			
 			dto.setId(id);
 			dto.setPwd(pwd);
 			dto.setTel(tel);
 			dto.setEmail(email);
 			dto.setNickName(nickName);
-			
 			
 			System.out.println(dto.getId() + dto.getPwd() + dto.getNickName() + dto.getTel() + dto.getEmail());
 			MemberDAO dao = MemberDAO.getInstance();
