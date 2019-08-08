@@ -53,13 +53,13 @@ public class IdFind extends JFrame implements ActionListener {
 	      model=new DefaultListModel<String>();
 	      idList = new JList<String>(model);
 	      scroll = new JScrollPane(idList,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	      scroll.setBounds(0,60,335,100);
+	      scroll.setBounds(30,60,335,300);
 	      
 	      JPanel p=new JPanel();
 	      p.add(emailL);
 	      p.add(emailT);
 	      p.add(findB);
-	      p.setBounds(0, 10,330,35);
+	      p.setBounds(30, 10,330,35);
 	      
 	      con.add(p);
 	      con.add(scroll);
@@ -73,7 +73,7 @@ public class IdFind extends JFrame implements ActionListener {
 	       });
 	      
 		
-		setBounds(480, 150, 400, 490);
+		setBounds(580, 180, 400, 450);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
@@ -81,6 +81,19 @@ public class IdFind extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
+		email = emailT.getText();
+		list = dao.getMemberList();
+		if(email.length()<=0) {
+			model.addElement("찾는 아이디가없습니다.");
+		}
+		else {
+			model.clear();
+			for(MemberDTO dto : list) {
+				if(email.equals(dto.getEmail())) {
+					model.addElement(dto.getId());
+				}
+			}
+		}
+		
 	}
 }
