@@ -129,8 +129,8 @@ public class MemberDAO {
 	// 전체 id
 	public ArrayList<MemberDTO> getIdList() {
 		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
-		String sql = "select id from member";
 		getConnection();
+		String sql = "select id from member";
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -154,6 +154,34 @@ public class MemberDAO {
 			}
 		}
 		return arrayList;
+	}
+	
+	public String getPwd(String id) { //비밀번호 찾기
+		String pwd = "";
+		getConnection();
+		String sql = "select pwd from member where id = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				pwd = rs.getString("pwd");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return pwd;
 	}
 	
 	// 회원 전체 정보
