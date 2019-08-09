@@ -28,9 +28,7 @@ import oxq.dto.MemberDTO;
 
 public class Login extends JFrame implements ActionListener, KeyListener {
 	private JLabel idL, pwdL;
-	private JTextField idT;
-	private JPasswordField pwdT;
-	
+	private JTextField idT, pwdT;
 	private JButton signIN, signUP, idFindB, pwFindB;
 
 	private MemberDTO dto;
@@ -41,13 +39,13 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 	public Login() {
 		setTitle("LOGIN");
 		
-		try {
-			img = ImageIO.read(new File("C:\\Users\\bitcamp\\Documents\\git\\OXQuize\\OXQ\\imgs\\bg.jpg"));
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "이미지 불러오기 실패");
-			System.exit(0);
-			e.printStackTrace();
-		}
+//		try {
+//			img = ImageIO.read(new File("C:\\Users\\bitcamp\\Documents\\git\\OXQuize\\OXQ\\imgs\\bg.jpg"));
+//		} catch (IOException e) {
+//			JOptionPane.showMessageDialog(null, "이미지 불러오기 실패");
+//			System.exit(0);
+//			e.printStackTrace();
+//		}
 		
 		myPanel panel = new myPanel();
 		panel.setSize(800, 600);
@@ -81,7 +79,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 		centerP.add(pn2);
 		centerP.add(pn3);
 		centerP.add(pn4);
-		
+
 		JPanel alignP = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 200));
 		alignP.add(centerP);
 		
@@ -130,59 +128,44 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 			} else if (pwdT.getText() == null || pwdT.getText() == "") { // 비번 입력 안했을때
 				JOptionPane.showMessageDialog(this, "비밀번호를 입력해주세요", "private", JOptionPane.INFORMATION_MESSAGE);				
 			} else { // 아이디 비번 입력 되어있을때
-				int flag = dao.login(id, pwd);
-				if(flag == 1) { //로그인 성공
-					JOptionPane.showMessageDialog(this, "로그인 성공!!", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
-					dao.LoginFlag(id);	// 로그인 1로 바꿔주기
-					dto = dao.loginDTO(id);
-					new WaitingRoom(dto).service();
-					
-					setVisible(false);
-					
-				} else if(flag == 0) { //비밀번호 틀림
-					JOptionPane.showMessageDialog(this, "비밀번호가 틀렸습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
-				} else if(flag == -1) {	//아이디 없음
-					JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+				if(dao.flag(id) == 1) {
+					JOptionPane.showMessageDialog(this, "이미 로그인 중입니다!!", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);	
+				}
+				else if(dao.flag(id) == 0) {
+					int flag = dao.login(id, pwd);
+					if(flag == 1) { //로그인 성공
+						JOptionPane.showMessageDialog(this, "로그인 성공!!", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
+						dao.LoginFlag(id);	// 로그인 1로 바꿔주기
+						dto = dao.loginDTO(id);
+						new WaitingRoom(dto).service();
+						
+						setVisible(false);
+						
+					} else if(flag == 0) { //비밀번호 틀림
+						JOptionPane.showMessageDialog(this, "비밀번호가 틀렸습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+					} else if(flag == -1) {	//아이디 없음
+						JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+					}
 				}
 			}
 
-
 		} // 로그인
-
-		else if (e.getSource() == signUP) {
-			new SignUp().event();
-		}
 		
-		else if (e.getActionCommand().equals("아이디 찾기")) {
-			new IdFind();
-		}
-		
-		else if (e.getActionCommand().equals("비밀번호 찾기")) {
-			new PwFind();
-		}
-		
+		else if (e.getSource() == signUP) {	new SignUp().event(); }
+		else if (e.getActionCommand().equals("아이디 찾기")) {	new IdFind(); }
+		else if (e.getActionCommand().equals("비밀번호 찾기")) { new PwFind(); }
 		
 	}
-
+	
+	@Override
+	public void keyPressed(KeyEvent e) {}
+	@Override
+	public void keyReleased(KeyEvent e) {}
+	@Override
+	public void keyTyped(KeyEvent e) {}
 
 	public static void main(String[] args) {
 		new Login().event();
 	}
-
 	
-	@Override
-	public void keyPressed(KeyEvent e) {
-		
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		
-	}
-
 }
