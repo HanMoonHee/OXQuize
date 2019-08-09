@@ -31,3 +31,4 @@ public class WaitChatServer {
 		new WaitChatServer();
 	}
 }
+

@@ -43,7 +43,7 @@ public class WaitChatHandler extends Thread {
 				} else if (dto.getCommand() == WaitInfo.SEND) {
 					WaitInfoDTO sendDTO = new WaitInfoDTO();
 					sendDTO.setCommand(WaitInfo.SEND);
-					sendDTO.setMessage("[" + nickName + "]" + dto.getMessage());
+					sendDTO.setMessage("[" + nickName + "] : " + dto.getMessage());
 					broadcast(sendDTO);
 				} else if (dto.getCommand() == WaitInfo.EXIT) {
 					// 나를 제외한 나머지 클라이언트에게 퇴장메세지 보내기
@@ -64,6 +64,14 @@ public class WaitChatHandler extends Thread {
 					socket.close();
 
 					break;
+				} else if (dto.getCommand() == WaitInfo.ROOM) {
+					WaitInfoDTO infodto = new WaitInfoDTO();
+
+					infodto.setCommand(WaitInfo.ROOM);
+					infodto.setDto(dto.getDto());
+					infodto.addRoomList();
+
+					broadcast(infodto);
 				}
 			}
 		} catch (ClassNotFoundException e) {

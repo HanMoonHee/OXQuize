@@ -48,10 +48,10 @@ public class RoomDAO {
 	}
 
 	// 게임방 만들기
-	public int insertRoom(RoomDTO dto) {
+	public int insertRoom(RoomDTO dto, String nickName) {
 		int su = 0;
 		getConnection(); // 접속
-		String sql = "INSERT INTO room values (?,?,?,?)";
+		String sql = "INSERT INTO room(room_no, room_name, room_pwd, room_playercnt, player1) values (?,?,?,?,?)";
 
 		try {
 			pstmt = conn.prepareStatement(sql); // 생성
@@ -59,6 +59,7 @@ public class RoomDAO {
 			pstmt.setString(2, dto.getRoomName());
 			pstmt.setString(3, dto.getRoomPwd());
 			pstmt.setInt(4, dto.getPlayerCnt());
+			pstmt.setString(5, nickName);
 
 			su = pstmt.executeUpdate(); // 실행
 
@@ -76,7 +77,28 @@ public class RoomDAO {
 		}
 		return su;
 	}
-
+	
+	// 게임방 이름 가지고 오기
+	public String getRoomName(String nickName) {
+		String roomName = "";
+		getConnection();
+		
+		String sql = "select room_name from room where player1 = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, nickName);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				roomName = rs.getString(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return roomName;
+	}
+	
 	// 게임방 번호 시퀀스로 받아오기
 	public int getRoomNum() {
 		int seq = 0;
@@ -164,6 +186,7 @@ public class RoomDAO {
 		}
 		return arrayList;
 	}
+	
 	// 디비에 저장된 회원 이긴 횟수별로 출력
 	public ArrayList<MemberDTO> getRankList() {
 		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
@@ -193,5 +216,54 @@ public class RoomDAO {
 			}
 		}
 		return arrayList;
+	}
+	
+	// 방에 들어와있는 애들 이름 가져옴
+	public ArrayList<String> getNicksss(int room_no){
+	      ArrayList<String> list = new ArrayList<String>();
+	      getConnection();
+	      String sql = "select player1,player2 from room where room_no = ?";
+	      
+	      try {
+	         pstmt = conn.prepareStatement(sql);
+	         pstmt.setInt(1, room_no);
+	         rs = pstmt.executeQuery();
+	         if(rs.next()) {
+	            list.add(rs.getString("player1"));
+	            list.add(rs.getString("player2"));
+	         }
+	      } catch (SQLException e) {
+	         // TODO Auto-generated catch block
+	         e.printStackTrace();
+	      }
+	      return list;
+	   }
+	
+	// player2 입장하면 업데이트
+	public int updatePlayer2(String nickName, int roomNo) {
+		int su = 0;
+		getConnection();
+		String sql = "update room set player2 = ? where room_no = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, nickName);
+			pstmt.setInt(2, roomNo);
+			
+			su = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return su;
 	}
 }
