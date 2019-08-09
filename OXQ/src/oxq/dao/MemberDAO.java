@@ -46,8 +46,8 @@ public class MemberDAO {
 		}
 	}
 	
-	// 회원 추가
-	public int insertMember(MemberDTO dto) {
+	
+	public int insertMember(MemberDTO dto) {// 회원 추가
 		int su = 0;
 		getConnection();
 		String sql = "insert into member(id, pwd, nickname, tel, email) values(?, ?, ?, ?, ?)";
@@ -75,7 +75,7 @@ public class MemberDAO {
 		return su;
 	}
 	
-	public int updateMember(MemberDTO dto) {
+	public int updateMember(MemberDTO dto) {//회원정보 업데이트
 		int su = 0;
 		getConnection();
 		String sql = "update member set pwd = ?,"
@@ -104,8 +104,8 @@ public class MemberDAO {
 		return su;
 	}
 	
-	//회원정보 삭제
-	public int deleteMember(String id) {
+	
+	public int deleteMember(String id) {//회원정보 삭제
 		int su = 0;
 		getConnection();
 		String sql = "delete Member where id = ?";
@@ -128,8 +128,8 @@ public class MemberDAO {
 		return su;
 	}
 	
-	// 전체 id
-	public ArrayList<MemberDTO> getIdList() {
+	
+	public ArrayList<MemberDTO> getIdList() {// 전체 id
 		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
 		getConnection();
 		String sql = "select id from member";
@@ -186,8 +186,8 @@ public class MemberDAO {
 		return pwd;
 	}
 	
-	// 회원 전체 정보
-	public ArrayList<MemberDTO> getMemberList() {
+	
+	public ArrayList<MemberDTO> getMemberList() {// 회원 전체 정보
 		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
 		getConnection();		
 		String sql = "select * from member";
@@ -344,7 +344,7 @@ public class MemberDAO {
 		return su;
 	}
 	
-	public ArrayList<MemberDTO> getId(String id) {
+	public ArrayList<MemberDTO> getId(String id) { //아이디 찾기
 		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
 		String sql = "select id from member where id = ?";
 		getConnection();
@@ -374,7 +374,7 @@ public class MemberDAO {
 		return arrayList;
 	}
 
-	public MemberDTO getIdLIst(MemberDTO dto) {
+	public MemberDTO getIdLIst(MemberDTO dto) { //아이디의 정보값 가져오기?
 	
 		getConnection();
 		String sql = "select * from member where id = ?";
