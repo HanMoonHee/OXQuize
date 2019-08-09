@@ -24,10 +24,6 @@ public class MemberDTO {
 		return tel;
 	}
 
-	public void setTel(String tel) {
-		this.tel = tel;
-	}
-
 	public String getNickName() {
 		return nickName;
 	}
@@ -69,6 +65,10 @@ public class MemberDTO {
 		this.email = email;
 	}
 
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+	
 	public void setLogin(int login) {
 		this.login = login;
 	}

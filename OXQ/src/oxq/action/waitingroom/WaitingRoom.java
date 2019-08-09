@@ -32,6 +32,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
+import oxq.action.game.GameWindow;
 import oxq.dao.MemberDAO;
 import oxq.dao.RoomDAO;
 import oxq.dto.MemberDTO;
@@ -286,16 +287,16 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 		if (room.get(index).getRoomPwd() == null) {	// 비밀번호가 없는 방
 			int ans = JOptionPane.showConfirmDialog(this, "입장 하시겠습니까?", "입장", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
 			if (ans == 0) {	// 입장 버튼 눌렀을때
-				roomdao.updatePlayer2(dto.getNickName(), roomdao.getRoomNum());	// 디비에 player2 update
-			//	new GameWindow(dto.getNickName(), 2, roomdao.getRoomNum());	//palycnt 2로 넣어주기
+//				roomdao.updatePlayer2(dto.getNickName(), roomdao.getRoomNum());	// 디비에 player2 update
+				//new GameWindow(dto.getNickName(), 2, roomdao.getRoomNum());	//palycnt 2로 넣어주기
 			}
 		} else { // 비밀번호 있는 방
 			String pwd = JOptionPane.showInputDialog(this, "비밀번호를 입력하세요");
 			System.out.println(pwd);
 			if(pwd != null) {
 				if(room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 일치
-					roomdao.updatePlayer2(dto.getNickName(), roomdao.getRoomNum());	// 디비에 player2 update
-				//	new GameWindow(dto.getNickName(), 2, roomdao.getRoomNum());	//palycnt 2로 넣어주기
+//					roomdao.updatePlayer2(dto.getNickName(), roomdao.getRoomNum());	// 디비에 player2 update
+					//new GameWindow(dto.getNickName(), 2, roomdao.getRoomNum());	//palycnt 2로 넣어주기
 				} else if(!room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 틀림
 					JOptionPane.showMessageDialog(this, "비밀번호가 다릅니다", "오류", JOptionPane.ERROR_MESSAGE);
 				} 
@@ -390,7 +391,7 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 			if(roomDialog.getRoom_ok() == 1) { // 방만들어졌을때 대기방 닫고 게임방 키기
 				setVisible(false);
 				
-				//new GameWindow(dto.getNickName(), roomName).service();	// 닉네임, 1, 방 시퀀스번호 넘겨줌
+				new GameWindow(dto.getNickName(), roomName).service();	// 닉네임, 1, 방 시퀀스번호 넘겨줌
 			} else if(roomDialog.getRoom_ok() == 0) { // 방안만들어졌을때
 				
 			}
