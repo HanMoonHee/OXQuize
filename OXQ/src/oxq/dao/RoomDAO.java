@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import oxq.action.game.PlayInfoDTO;
 import oxq.dto.MemberDTO;
 import oxq.dto.RoomDTO;
 
@@ -218,52 +219,194 @@ public class RoomDAO {
 		return arrayList;
 	}
 	
-	// 방에 들어와있는 애들 이름 가져옴
-	public ArrayList<String> getNicksss(int room_no){
-	      ArrayList<String> list = new ArrayList<String>();
-	      getConnection();
-	      String sql = "select player1,player2 from room where room_no = ?";
-	      
-	      try {
-	         pstmt = conn.prepareStatement(sql);
-	         pstmt.setInt(1, room_no);
-	         rs = pstmt.executeQuery();
-	         if(rs.next()) {
-	            list.add(rs.getString("player1"));
-	            list.add(rs.getString("player2"));
-	         }
-	      } catch (SQLException e) {
-	         // TODO Auto-generated catch block
-	         e.printStackTrace();
-	      }
-	      return list;
-	   }
-	
-	// player2 입장하면 업데이트
-	public int updatePlayer2(String nickName, int roomNo) {
-		int su = 0;
+	public ArrayList<String> getNicksss(String room_name){ // 해당 방에 있는 플레이어의 닉네임을 디비에서 불러와서 리스트에 담는다
+		ArrayList<String> list = new ArrayList<String>();
 		getConnection();
-		String sql = "update room set player2 = ? where room_no = ?";
+		String sql = "select player1,player2 from room where room_name = ?"; // room_name으로
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, nickName);
-			pstmt.setInt(2, roomNo);
-			
-			su = pstmt.executeUpdate();
-			
+			pstmt.setString(1, room_name);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				list.add(rs.getString("player1"));
+				list.add(rs.getString("player2"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+	public int getPlayerCnt() { // 해당 방에 있는 플레이어의 수를 구한다
+		int playerCnt=0;
+		String roomName = "room1";
+		
+		getConnection();
+		String sql = "select ROOM_PLAYERCNT from room where ROOM_NAME = ?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, roomName);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+//				RoomDTO dto = new RoomDTO();
+				playerCnt = rs.getInt("ROOM_PLAYERCNT");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			try { // 종료
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		return su;
+		return playerCnt;
 	}
+
+	public void updatePlayCnt(PlayInfoDTO dto, String roomName) { // 플레이어가 게임방에 들어가면/나가면 그 게임방의 플에이어 수를 바꾼다
+		String sql = "update room set ROOM_PLAYERCNT=? where ROOM_NAME=?";
+		getConnection();
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, dto.getPlayerCnt());
+			pstmt.setString(2,roomName);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (rs != null)	rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void updatePlayer1(String nickname) { // 1번 플레이어가 방을 나가면 room 테이블에서 닉네임 삭제
+		getConnection();
+		String sql = "update room set player1=null where player1=?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, nickname);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (rs != null)	rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public void updatePlayer2(String nickname) { // 2번 플레이어가 방을 나가면 room 테이블에서 닉네임 삭제
+		getConnection();
+		String sql = "update room set player2=null where player2=?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, nickname);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (rs != null)	rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+
+	public void updatePlayer01Score(String nickname, int correctCnt) {
+		getConnection();
+		String sql = "update room set player1_score=? where player1=?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, correctCnt);
+			pstmt.setString(2, nickname);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (rs != null)	rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+	public void updatePlayer02Score(String nickname, int correctCnt) {
+		getConnection();
+		String sql = "update room set player2_score=? where player2=?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, correctCnt);
+			pstmt.setString(2, nickname);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (rs != null)	rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public int getP1Score(String room_name) {
+		int p1Score = 0;
+		getConnection();
+		String sql = "select player1_score from room where room_name =?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, room_name);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				p1Score = rs.getInt("player1_score");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return p1Score;
+	}
+	
+	public int getP2Score(String room_name) {
+		int p2Score = 0;
+		getConnection();
+		String sql = "select player2_score from room where room_name =?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, room_name);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				p2Score = rs.getInt("player2_score");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return p2Score;
+	}
+
 }
