@@ -15,8 +15,8 @@ import javax.mail.internet.MimeMessage;
 
 public class SMTPMailSendManager {
 
-	public int randomNumber = 0; //인증번호 발생
-
+	private int randomNumber; //인증번호 발생
+	
 	
 	public SMTPMailSendManager() {
 		Properties p = System.getProperties();
@@ -35,7 +35,7 @@ public class SMTPMailSendManager {
         MimeMessage msg = new MimeMessage(session);
 
         randomNumber = (int)(Math.random()*8999)+1000;
-        
+        System.out.println(randomNumber);
         try{
             //편지보낸시간
             msg.setSentDate(new Date());
@@ -73,6 +73,14 @@ public class SMTPMailSendManager {
         }
 	}
 	
+	public int getRandomNumber() {
+		return randomNumber;
+	}
+	
+	public void setRandomNumber(int randomNumber) {
+		this.randomNumber = randomNumber;
+	}
+
 	public static void main(String[] args) {
 		
 		SMTPMailSendManager smtpMailSendManager = new SMTPMailSendManager();
@@ -100,3 +108,4 @@ class MyAuthentication extends Authenticator {
         return pa;
     }
 }
+

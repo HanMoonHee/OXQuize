@@ -427,35 +427,33 @@ public class MemberDAO {
 	}
 
 	// 아이디 찾기
-	public ArrayList<MemberDTO> getId(String id) {
-		ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
-		String sql = "select id from member where id = ?";
-		getConnection();
+	public String getId(String id) { // 아이디 찾기
+	      //ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
+	      String searchedID = "";
+	      String sql = "select id from member where id = ?";
+	      getConnection();
+	      
+	      try {
+	         pstmt = conn.prepareStatement(sql);
+	         pstmt.setString(1, id);
+	         rs = pstmt.executeQuery();
 
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, id);
-			rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				MemberDTO dto = new MemberDTO();
-				dto.setId(rs.getString("id"));
-
-				arrayList.add(dto);
-			} // while
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null)	rs.close();
-				if (pstmt != null)	pstmt.close();
-				if (conn != null)	conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return arrayList;
-	}
+	         if (rs.next()) {
+	            searchedID = rs.getString(1);
+	         } 
+	      } catch (SQLException e) {
+	         e.printStackTrace();
+	      } finally {
+	         try {
+	            if (rs != null) rs.close();
+	            if (pstmt != null) pstmt.close();
+	            if (conn != null) conn.close();
+	         } catch (SQLException e) {
+	            e.printStackTrace();
+	         }
+	      }
+	      return searchedID;
+	   }
 
 	// 아이디의 정보값 가져오기
 	public MemberDTO getIdLIst(MemberDTO dto) {

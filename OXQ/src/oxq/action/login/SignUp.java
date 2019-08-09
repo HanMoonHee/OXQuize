@@ -216,7 +216,6 @@ public class SignUp extends JFrame implements ActionListener {
 				}
 			}
 		} else if (e.getSource() == addB) { // 회원가입
-			System.out.println(smtp.getRandomNumber());
 			MemberDAO dao = MemberDAO.getInstance();
 			id = idT.getText();
 			email = emailT.getText();
