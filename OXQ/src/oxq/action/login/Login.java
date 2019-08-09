@@ -2,35 +2,56 @@ package oxq.action.login;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import oxq.action.waitingroom.WaitingRoom;
 import oxq.dao.MemberDAO;
 import oxq.dto.MemberDTO;
 
-public class Login extends JFrame implements ActionListener {
+public class Login extends JFrame implements ActionListener, KeyListener {
 	private JLabel idL, pwdL;
-	private JTextField idT, pwdT;
+	private JTextField idT;
+	private JPasswordField pwdT;
+	
 	private JButton signIN, signUP, idFindB, pwFindB;
 
 	private MemberDTO dto;
 	private String id;
 	private String pwd;
-	private boolean idCheck = false;
-	private boolean pwdCheck = false;
+	private BufferedImage img;
 
 	public Login() {
 		setTitle("LOGIN");
+		
+		try {
+			img = ImageIO.read(new File("C:\\Users\\bitcamp\\Documents\\git\\OXQuize\\OXQ\\imgs\\bg.jpg"));
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "이미지 불러오기 실패");
+			System.exit(0);
+			e.printStackTrace();
+		}
+		
+		myPanel panel = new myPanel();
+		panel.setSize(800, 600);
+		
 		JPanel pn1 = new JPanel();
 		idL = new JLabel("ID : ");
 		idT = new JTextField(15);
@@ -39,7 +60,7 @@ public class Login extends JFrame implements ActionListener {
 
 		JPanel pn2 = new JPanel();
 		pwdL = new JLabel("PASSWORD : ");
-		pwdT = new JTextField(15);
+		pwdT = new JPasswordField(15);
 		pn2.add(pwdL);
 		pn2.add(pwdT);
 
@@ -65,6 +86,7 @@ public class Login extends JFrame implements ActionListener {
 		alignP.add(centerP);
 		
 		Container contentPane = this.getContentPane();
+		//contentPane.add(panel);
 		contentPane.add("Center", alignP);
 
 		setBounds(480, 150, 800, 600);
@@ -73,11 +95,26 @@ public class Login extends JFrame implements ActionListener {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
+	class myPanel extends JPanel {
+		public void paint(Graphics g) {
+			g.drawImage(img, 0, 0, null);
+		}
+	}
+	
 	public void event() {
 		signIN.addActionListener(this);
 		signUP.addActionListener(this);
 		idFindB.addActionListener(this);
 		pwFindB.addActionListener(this);
+		
+		pwdT.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					signIN.doClick();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -130,6 +167,22 @@ public class Login extends JFrame implements ActionListener {
 
 	public static void main(String[] args) {
 		new Login().event();
+	}
+
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		
 	}
 
 }

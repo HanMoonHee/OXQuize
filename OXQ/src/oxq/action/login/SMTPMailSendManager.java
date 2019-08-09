@@ -83,10 +83,10 @@ class MyAuthentication extends Authenticator {
     PasswordAuthentication pa;
     
     public MyAuthentication(){
-    
-        String id = "mun01180@gmail.com";       // 구글 ID
-        String pw = "yonghea1";          // 구글 비밀번호
  
+        String id = "kimhum100@gmail.com";       // 구글 ID
+        String pw = "Bit10000!";          // 구글 비밀번호
+        
         // ID와 비밀번호를 입력한다.
         pa = new PasswordAuthentication(id, pw);
       
