@@ -32,11 +32,11 @@ public class SignUp extends JFrame implements ActionListener {
 	private JButton idB, emailB, addB, cancelB, clearB;
 	private String id, email;
 	private SMTPMailSendManager smtp;
-	//private MemberDTO dto;
+	// private MemberDTO dto;
 
 	public SignUp() {
 		super("회원가입");
-		
+
 		idL = new JLabel("    아이디  :    ");
 		pwdL = new JLabel("    비밀번호 : ");
 		pwdCheckL = new JLabel("    비밀번호확인 :");
@@ -49,8 +49,7 @@ public class SignUp extends JFrame implements ActionListener {
 		pwdEqL = new JLabel("비밀번호 불일치");
 		pwdEqL.setVisible(false);
 		emailCKL = new JLabel("    인증번호 확인 : ");
-		
-		
+
 		idT = new JTextField(10);
 		pwdT = new JPasswordField(10);
 		pwdCheckT = new JPasswordField(10);
@@ -59,10 +58,9 @@ public class SignUp extends JFrame implements ActionListener {
 		tel3T = new JTextField(5);
 		emailT = new JTextField(7);
 		emailCKT = new JTextField(10);
-		
+
 		pwdT.setEchoChar('*');
 		pwdCheckT.setEchoChar('*');
-		
 
 		String[] tel = { "010", "011", "016", "019" };
 		tel1C = new JComboBox<String>(tel);
@@ -84,14 +82,13 @@ public class SignUp extends JFrame implements ActionListener {
 		JPanel pwdP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 비밀번호
 		pwdP.add(pwdL);
 		pwdP.add(pwdT);
-		
+
 		JPanel pwdEqP = new JPanel();
 		pwdEqP.add(pwdEqL);
-		
+
 		JPanel pwdCP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 비밀번호확인
 		pwdCP.add(pwdCheckL);
 		pwdCP.add(pwdCheckT);
-
 
 		JPanel nickNameP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 닉네임
 		nickNameP.add(nickNameL);
@@ -111,8 +108,8 @@ public class SignUp extends JFrame implements ActionListener {
 		emailP.add(golL);
 		emailP.add(emailC);
 		emailP.add(emailB);
-		
-		JPanel emailCKP = new JPanel(new FlowLayout(FlowLayout.LEFT)); //이메일 인증번호 확인
+
+		JPanel emailCKP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 이메일 인증번호 확인
 		emailCKP.add(emailCKL);
 		emailCKP.add(emailCKT);
 
@@ -131,53 +128,51 @@ public class SignUp extends JFrame implements ActionListener {
 		centerP.add(telP);
 		centerP.add(emailP);
 		centerP.add(emailCKP);
-		
+
 		Container con = this.getContentPane();
 		con.add("Center", centerP);
 		con.add("South", buttonP);
 
 		setBounds(620, 220, 400, 490);
 		setVisible(true);
-		//setDefaultCloseOperation(EXIT_ON_CLOSE);
+		// setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
-		
+
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				setVisible(false);
 			}
 		});
 	}
-	
+
 	public void event() {
 		idB.addActionListener(this);
 		emailB.addActionListener(this);
-		addB.addActionListener(this); 
+		addB.addActionListener(this);
 		cancelB.addActionListener(this);
 		clearB.addActionListener(this);
-		
-		
-		
-		pwdCheckT.addKeyListener(new KeyAdapter() {
+
+		pwdCheckT.addKeyListener(new KeyAdapter() {// 패스워드 일치 확인
 			@Override
 			public void keyReleased(KeyEvent e) {
 				String pw = new String(pwdT.getPassword());
 				String pwC = new String(pwdCheckT.getPassword());
-				if(!(pw.equals(pwC))) {
+				if (!(pw.equals(pwC))) {
 					pwdEqL.setVisible(true);
-				} else if(pw.equals(pwC)){
+				} else if (pw.equals(pwC)) {
 					pwdEqL.setVisible(false);
 				}
-				if(pwC.length() == 0) {
+				if (pwC.length() == 0) {
 					pwdEqL.setVisible(false);
 				}
-				
+
 				System.out.println(pw);
 				System.out.println(pwC);
 			}
 		});
 	}
-	
-	public void clear() {
+
+	public void clear() { // 프로필 초기화
 		idT.setText("");
 		pwdT.setText("");
 		pwdCheckT.setText("");
@@ -191,97 +186,110 @@ public class SignUp extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == idB) {	// 중복확인
+		if (e.getSource() == idB) { // 중복확인
 			MemberDAO dao = MemberDAO.getInstance();
 			id = idT.getText();
-			System.out.println("입력값: " +id);
-			if(idT.getText().equals("")) {
-				JOptionPane.showConfirmDialog(this, "아이디를 입력하세요.", "입력 오류", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-			} else if(id.equals(dao.getId(id))) {
-				JOptionPane.showConfirmDialog(this, "이미 존재하는 아이디 입니다.", "사용불가", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-			} else if(!id.equals(dao.getId(id))) {
-				JOptionPane.showConfirmDialog(this, "사용가능한 아이디 입니다.", "사용가능", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);				
+			System.out.println("입력값: " + id);
+			if (idT.getText().equals("")) {
+				JOptionPane.showConfirmDialog(this, "아이디를 입력하세요.", "입력 오류", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.ERROR_MESSAGE);
+			} else if (id.equals(dao.getId(id))) {
+				JOptionPane.showConfirmDialog(this, "이미 존재하는 아이디 입니다.", "사용불가", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.ERROR_MESSAGE);
+			} else if (!id.equals(dao.getId(id))) {
+				JOptionPane.showConfirmDialog(this, "사용가능한 아이디 입니다.", "사용가능", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 			}
-		} else if(e.getSource() == emailB) {	// 이메일 인증
+		} else if (e.getSource() == emailB) { // 이메일 인증
 			MemberDAO dao = MemberDAO.getInstance();
 			email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
 			System.out.println(email);
 			ArrayList<MemberDTO> arrayList = dao.getMemberList();
 			for (MemberDTO dto : arrayList) {
-				if(email.equals(dto.getEmail())) {
+				if (email.equals(dto.getEmail())) {
 					JOptionPane.showMessageDialog(this, "이미 존재하는 이메일 입니다.", "이메일 중복", JOptionPane.ERROR_MESSAGE);
 					return;
-				} else if(!email.equals(dto.getEmail())) {
+				} else if (!email.equals(dto.getEmail())) {
 					smtp = new SMTPMailSendManager();
 					JOptionPane.showMessageDialog(this, "인증번호를 발송하였습니다.", "인증번호 전송", JOptionPane.INFORMATION_MESSAGE);
 					break;
 				}
 			}
-		} else if(e.getSource() == addB) {	// 회원가입
+		} else if (e.getSource() == addB) { // 회원가입
 			System.out.println(smtp.getRandomNumber());
 			MemberDAO dao = MemberDAO.getInstance();
 			id = idT.getText();
 			email = emailT.getText();
-			if(id.equals(dao.getId(id))) {
-				JOptionPane.showConfirmDialog(null, "중복 확인을 해 주세요.", "아이디 중복", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			if (id.equals(dao.getId(id))) {
+				JOptionPane.showConfirmDialog(null, "중복 확인을 해 주세요.", "아이디 중복", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 			}
-			
-			if(id.length() == 0) {
-				JOptionPane.showConfirmDialog(null, "아이디를 확인 해 주세요.", "에러", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+
+			if (id.length() == 0) {
+				JOptionPane.showConfirmDialog(null, "아이디를 확인 해 주세요.", "에러", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 				return;
-			}else if(pwdT.getPassword().length == 0) {
-				JOptionPane.showConfirmDialog(null, "비밀번호를 확인 해 주세요.", "비밀번호 공백", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			} else if (pwdT.getPassword().length == 0) {
+				JOptionPane.showConfirmDialog(null, "비밀번호를 확인 해 주세요.", "비밀번호 공백", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 				return;
-			}else if(!pwdT.getText().equals(pwdCheckT.getText())) {
-				JOptionPane.showConfirmDialog(null, "비밀번호를 확인 해 주세요.", "비밀번호 불일치", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			} else if (!pwdT.getText().equals(pwdCheckT.getText())) {
+				JOptionPane.showConfirmDialog(null, "비밀번호를 확인 해 주세요.", "비밀번호 불일치", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 				return;
-			} else if(emailT.getText().length() == 0) {
-				JOptionPane.showConfirmDialog(null, "이메일을 입력해 주세요.", "이메일 공백", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			} else if (emailT.getText().length() == 0) {
+				JOptionPane.showConfirmDialog(null, "이메일을 입력해 주세요.", "이메일 공백", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 				return;
-			} else if(tel2T.getText().length() == 0) {
-				JOptionPane.showConfirmDialog(null, "전화번호를 입력해 주세요.", "전화번호 공백", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			} else if (tel2T.getText().length() == 0) {
+				JOptionPane.showConfirmDialog(null, "전화번호를 입력해 주세요.", "전화번호 공백", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 				return;
-			} else if(tel3T.getText().length() == 0) {
-				JOptionPane.showConfirmDialog(null, "전화번호를 입력해 주세요.", "전화번호 공백", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			} else if (tel3T.getText().length() == 0) {
+				JOptionPane.showConfirmDialog(null, "전화번호를 입력해 주세요.", "전화번호 공백", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 				return;
-			} else if(emailCKT.getText().length() == 0) {
-				JOptionPane.showConfirmDialog(null, "이메일 인증번호를 입력해 주세요.", "이메일 인증번호 입력", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			} else if (emailCKT.getText().length() == 0) {
+				JOptionPane.showConfirmDialog(null, "이메일 인증번호를 입력해 주세요.", "이메일 인증번호 입력", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 				return;
-			} else if(Integer.parseInt(emailCKT.getText()) != smtp.getRandomNumber()) {
-				JOptionPane.showConfirmDialog(null, "인증번호가 틀렸습니다.", "인증번호 오류", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			} else if (Integer.parseInt(emailCKT.getText()) != smtp.getRandomNumber()) {
+				JOptionPane.showConfirmDialog(null, "인증번호가 틀렸습니다.", "인증번호 오류", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
-				
+
 			MemberDTO dto = new MemberDTO();
-			//아이디
+			// 아이디
 			String id = idT.getText();
-			//패스워드
-			String pwd = new String (pwdT.getPassword());
-			//tel1c + tel2 + tel3 합치기
-			String tel = tel1C.getSelectedItem().toString() + hyphenL1.getText() + tel2T.getText() + hyphenL2.getText() +tel3T.getText();
-			//email + emailc 합치기
+			// 패스워드
+			String pwd = new String(pwdT.getPassword());
+			// tel1c + tel2 + tel3 합치기
+			String tel = tel1C.getSelectedItem().toString() + hyphenL1.getText() + tel2T.getText() + hyphenL2.getText()
+					+ tel3T.getText();
+			// email + emailc 합치기
 			String email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
-			//닉네임 
+			// 닉네임
 			String nickName = nickNameT.getText();
-			
+
 			dto.setId(id);
 			dto.setPwd(pwd);
 			dto.setTel(tel);
 			dto.setEmail(email);
 			dto.setNickName(nickName);
-			
-			
+
 			System.out.println(dto.getId() + dto.getPwd() + dto.getNickName() + dto.getTel() + dto.getEmail());
 			int su = dao.insertMember(dto);
-			JOptionPane.showConfirmDialog(null, "회원가입을 완료했습니다.", "회원가입 완료", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showConfirmDialog(null, "회원가입을 완료했습니다.", "회원가입 완료", JOptionPane.DEFAULT_OPTION,
+					JOptionPane.INFORMATION_MESSAGE);
 			setVisible(false);
-		} else if(e.getSource() == cancelB) {	// 가입취소
-			
+		} else if (e.getSource() == cancelB) { // 가입취소
+
 			setVisible(false);
-		} else if(e.getSource() == clearB) {	// 다시작성
+		} else if (e.getSource() == clearB) { // 다시작성
 			clear();
 		}
-		
+
 	}
 
 }
