@@ -20,7 +20,6 @@ import javax.swing.JTextField;
 import oxq.dao.MemberDAO;
 import oxq.dto.MemberDTO;
 
-
 public class PwFind extends JFrame implements ActionListener, KeyListener {
 
 	private MemberDAO dao = MemberDAO.getInstance();
@@ -31,7 +30,8 @@ public class PwFind extends JFrame implements ActionListener, KeyListener {
 	private Container con;
 	private String id;
 	private String email;
-	
+	private MemberDTO dto;
+
 	public PwFind() {
 		super("비밀번호 찾기");
 
@@ -44,19 +44,15 @@ public class PwFind extends JFrame implements ActionListener, KeyListener {
 		findB = new JButton("찾기");
 		findB.addActionListener(this);
 
-	  emailT.addKeyListener(new KeyAdapter() {
-	      @Override
-	      public void keyPressed(KeyEvent e) {
-	         if(e.getKeyCode()==KeyEvent.VK_ENTER) {
-	            findB.doClick();
-	         }
-	      }
-	  });
-		
-		idT.addKeyListener(this);
-		idT.setFocusTraversalKeysEnabled(false);
-		emailT.addKeyListener(this);
-		emailT.setFocusTraversalKeysEnabled(false);
+		emailT.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					findB.doClick();
+				}
+			}
+		});
+
 		JPanel idP = new JPanel();
 		JPanel emailP = new JPanel();
 
@@ -71,11 +67,11 @@ public class PwFind extends JFrame implements ActionListener, KeyListener {
 		con.add(idP);
 		con.add(emailP);
 		con.add(findB);
-		
+
 		setBounds(580, 180, 400, 450);
 		setVisible(true);
 		setResizable(false);
-		
+
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -87,28 +83,29 @@ public class PwFind extends JFrame implements ActionListener, KeyListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		/*
-		 * 1. 아이디와 이메일값을 입력받는다.
-		 * 2. 찾기버튼을 누른다.
-		 * 3. dao에서 입력한 아이디와 이메일로 디비 검사 후 맞는것을 getter하여 list변수에 넣는다.
-		 * 4. 
-		 * 4. 입력한 이메일에 비밀번호를 보낸다.
+		 * 1. 아이디와 이메일값을 입력받는다. 2. 찾기버튼을 누른다. 3. dao에서 입력한 아이디와 이메일로 디비 검사 후 맞는것을
+		 * getter하여 list변수에 넣는다. 4. 4. 입력한 이메일에 비밀번호를 보낸다.
 		 */
 		id = idT.getText();
-		
+
 		email = emailT.getText();
 		list = dao.getMemberList();
-		
+
 		// 아이디를입력하세요
-		if (id.length() <= 0) {
-			JOptionPane.showMessageDialog(this, "아이디를 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
-		} else if (id.length() > 0 && email.length() <= 0) {
-			JOptionPane.showMessageDialog(this, "이메일을 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
-		} else {
-			new SMTPMailSendPassword(id, email);
-			JOptionPane.showMessageDialog(this, "비밀번호를 발송하였습니다.", "Send", JOptionPane.ERROR_MESSAGE);
-			
+		for (MemberDTO dto : list) {
+			if (id.length() <= 0) {
+				JOptionPane.showMessageDialog(this, "아이디를 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
+			} else if (id.length() > 0 && email.length() <= 0) {
+				JOptionPane.showMessageDialog(this, "이메일을 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
+			} else if (!id.equals(dto.getId()) || !email.equals(dto.getEmail())) {
+				JOptionPane.showMessageDialog(this, "아이디와 이메일을 확인해 주세요", "아이디 이메일 불일치", JOptionPane.ERROR_MESSAGE);
+			} else {
+				new SMTPMailSendPassword(id, email);
+				JOptionPane.showMessageDialog(this, "비밀번호를 발송하였습니다.", "Send", JOptionPane.ERROR_MESSAGE);
+	
+			}
 		}
-		
+
 	}
 
 	@Override
@@ -124,6 +121,6 @@ public class PwFind extends JFrame implements ActionListener, KeyListener {
 	@Override
 	public void keyTyped(KeyEvent arg0) {
 
-	}	
-	
+	}
+
 }

@@ -15,8 +15,6 @@ import javax.mail.internet.MimeMessage;
 import oxq.dao.MemberDAO;
 import oxq.dto.MemberDTO;
 
-import oxq.action.login.SMTPMailSendManager;
-
 public class SMTPMailSendPassword {
 
 	private MemberDAO dao = MemberDAO.getInstance();
@@ -24,8 +22,6 @@ public class SMTPMailSendPassword {
 	private String searchPassword;
 	
 	public SMTPMailSendPassword (String id, String email) {
-		
-		//System.out.println("아이디:"+id);
 		Properties p = System.getProperties();
 		p.put("mail.smtp.starttls.enable", "true"); //gmail은 무조건 true 고정
 		p.put("mail.smtp.host", "smtp.gmail.com"); //smtp 서버 주소
@@ -44,7 +40,7 @@ public class SMTPMailSendPassword {
         list = dao.getMemberList();
 
 		for(MemberDTO dto : list) {
-			if(id.equals(dto.getId())) {
+			if(id.equals(dto.getId()) && dto.getEmail().equals(email)) {
 				searchPassword = dto.getPwd();
 			}
 		}
@@ -52,20 +48,13 @@ public class SMTPMailSendPassword {
         try{
             //편지보낸시간
             msg.setSentDate(new Date());
-             
-            InternetAddress from = new InternetAddress() ;
-             
-            from = new InternetAddress("<mun01180@gmail.com>");
-             
-            // 이메일 발신자
-            msg.setFrom(from);
             
             // 이메일 수신자
             InternetAddress to = new InternetAddress(email);
             msg.setRecipient(Message.RecipientType.TO, to);
              
             // 이메일 제목
-            msg.setSubject("인증번호를 확인하세요.", "UTF-8");
+            msg.setSubject("비밀번호를 확인하세요.", "UTF-8");
              
             // 이메일 내용
             msg.setText("패스워드는 : " + searchPassword + "입니다." , "UTF-8");
