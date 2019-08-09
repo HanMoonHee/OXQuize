@@ -39,13 +39,13 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 	public Login() {
 		setTitle("LOGIN");
 		
-		try {
-			img = ImageIO.read(new File("C:\\Users\\bitcamp\\Documents\\git\\OXQuize\\OXQ\\imgs\\bg.jpg"));
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "이미지 불러오기 실패");
-			System.exit(0);
-			e.printStackTrace();
-		}
+//		try {
+//			img = ImageIO.read(new File("C:\\Users\\bitcamp\\Documents\\git\\OXQuize\\OXQ\\imgs\\bg.jpg"));
+//		} catch (IOException e) {
+//			JOptionPane.showMessageDialog(null, "이미지 불러오기 실패");
+//			System.exit(0);
+//			e.printStackTrace();
+//		}
 		
 		myPanel panel = new myPanel();
 		panel.setSize(800, 600);
