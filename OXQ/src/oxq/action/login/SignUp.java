@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
@@ -23,12 +25,12 @@ import oxq.dao.MemberDAO;
 import oxq.dto.MemberDTO;
 
 public class SignUp extends JFrame implements ActionListener {
-	private JLabel idL, pwdL, pwdCheckL, pwdEq, nickNameL, telL, emailL, hyphenL1, hyphenL2, golL;
-	private JTextField idT, nickNameT, tel2T, tel3T, emailT;
+	private JLabel idL, pwdL, pwdCheckL, pwdEqL, nickNameL, telL, emailL, hyphenL1, hyphenL2, golL, emailCKL;
+	private JTextField idT, nickNameT, tel2T, tel3T, emailT, emailCKT;
 	private JPasswordField pwdT, pwdCheckT;
 	private JComboBox<String> tel1C, emailC;
 	private JButton idB, emailB, addB, cancelB, clearB;
-	private String id;
+	private String id, email;
 	//private MemberDTO dto;
 
 	public SignUp() {
@@ -43,8 +45,10 @@ public class SignUp extends JFrame implements ActionListener {
 		hyphenL1 = new JLabel("-");
 		hyphenL2 = new JLabel("-");
 		golL = new JLabel("@");
-		pwdEq = new JLabel("비밀번호 불일치");
-		pwdEq.setVisible(false);
+		pwdEqL = new JLabel("비밀번호 불일치");
+		pwdEqL.setVisible(false);
+		emailCKL = new JLabel("    인증번호 확인 : ");
+		
 		
 		idT = new JTextField(10);
 		pwdT = new JPasswordField(10);
@@ -53,6 +57,7 @@ public class SignUp extends JFrame implements ActionListener {
 		tel2T = new JTextField(5);
 		tel3T = new JTextField(5);
 		emailT = new JTextField(7);
+		emailCKT = new JTextField(10);
 		
 		pwdT.setEchoChar('*');
 		pwdCheckT.setEchoChar('*');
@@ -79,8 +84,8 @@ public class SignUp extends JFrame implements ActionListener {
 		pwdP.add(pwdL);
 		pwdP.add(pwdT);
 		
-		JPanel pwdEqp = new JPanel();
-		pwdEqp.add(pwdEq);
+		JPanel pwdEqP = new JPanel();
+		pwdEqP.add(pwdEqL);
 		
 		JPanel pwdCP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 비밀번호확인
 		pwdCP.add(pwdCheckL);
@@ -105,6 +110,10 @@ public class SignUp extends JFrame implements ActionListener {
 		emailP.add(golL);
 		emailP.add(emailC);
 		emailP.add(emailB);
+		
+		JPanel emailCKP = new JPanel(new FlowLayout(FlowLayout.LEFT)); //이메일 인증번호 확인
+		emailCKP.add(emailCKL);
+		emailCKP.add(emailCKT);
 
 		JPanel buttonP = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JPanel buttonP2 = new JPanel(new GridLayout(1, 3, 5, 5));
@@ -113,13 +122,14 @@ public class SignUp extends JFrame implements ActionListener {
 		buttonP2.add(clearB);
 		buttonP.add(buttonP2);
 
-		JPanel centerP = new JPanel(new GridLayout(7, 1, 0, 0));
+		JPanel centerP = new JPanel(new GridLayout(8, 1, 0, 0));
 		centerP.add(idP);
 		centerP.add(pwdP);
 		centerP.add(pwdCP);
 		centerP.add(nickNameP);
 		centerP.add(telP);
 		centerP.add(emailP);
+		centerP.add(emailCKP);
 		
 		Container con = this.getContentPane();
 		con.add("Center", centerP);
@@ -127,8 +137,14 @@ public class SignUp extends JFrame implements ActionListener {
 
 		setBounds(620, 220, 400, 490);
 		setVisible(true);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
+		
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				setVisible(false);
+			}
+		});
 	}
 	
 	public void event() {
@@ -146,13 +162,14 @@ public class SignUp extends JFrame implements ActionListener {
 				String pw = new String(pwdT.getPassword());
 				String pwC = new String(pwdCheckT.getPassword());
 				if(!(pw.equals(pwC))) {
-					pwdEq.setVisible(true);
+					pwdEqL.setVisible(true);
 				} else if(pw.equals(pwC)){
-					pwdEq.setVisible(false);
+					pwdEqL.setVisible(false);
 				}
 				if(pwC.length() == 0) {
-					pwdEq.setVisible(false);
+					pwdEqL.setVisible(false);
 				}
+				
 				System.out.println(pw);
 				System.out.println(pwC);
 			}
@@ -187,16 +204,27 @@ public class SignUp extends JFrame implements ActionListener {
 				}
 			}
 		} else if(e.getSource() == emailB) {	// 이메일 인증
-			
+			MemberDAO dao = MemberDAO.getInstance();
+			email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
+			ArrayList<MemberDTO> arrayList = dao.getId(id);
+			for (MemberDTO dto : arrayList) {
+				if(email.equals(dto.getEmail())) {
+					
+				} else if(!email.equals(dto.getEmail())) {
+					new SMTPMailSendManager();
+					JOptionPane.showMessageDialog(this, "인증번호를 발송하였습니다.", "Send", JOptionPane.ERROR_MESSAGE);
+				}
+			}
 		} else if(e.getSource() == addB) {	// 회원가입
 			MemberDAO dao = MemberDAO.getInstance();
 			id = idT.getText();
+			email = emailT.getText();
 			ArrayList<MemberDTO> arrayList = dao.getId(id);
 			for (MemberDTO dto : arrayList) {
 				if(dto.getId().equals(id)) {	// 중복확인
 					JOptionPane.showConfirmDialog(null, "중복 확인을 해 주세요.", "아이디 중복", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
 					return;
-				}
+				} 
 				break;
 			}
 			

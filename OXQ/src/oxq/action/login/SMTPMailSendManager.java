@@ -34,7 +34,7 @@ public class SMTPMailSendManager {
         Session session = Session.getDefaultInstance(p, auth);
         MimeMessage msg = new MimeMessage(session);
 
-        randomNumber = (int)(Math.random()*10000)+1;
+        randomNumber = (int)(Math.random()*8999)+1000;
         
         try{
             //편지보낸시간
@@ -42,13 +42,16 @@ public class SMTPMailSendManager {
              
             InternetAddress from = new InternetAddress() ;
              
-            from = new InternetAddress("<mun01180@gmail.com>");
+            
+            from = new InternetAddress("<kimhum11@gmail.com>");
              
             // 이메일 발신자
             msg.setFrom(from);
-            
+           
             // 이메일 수신자
-            InternetAddress to = new InternetAddress("mun_1201@naver.com");
+           
+            InternetAddress to = new InternetAddress("kimtahun11@naver.com");
+            
             msg.setRecipient(Message.RecipientType.TO, to);
              
             // 이메일 제목
