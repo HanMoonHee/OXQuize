@@ -101,8 +101,7 @@ public class PwFind extends JFrame implements ActionListener, KeyListener {
 				JOptionPane.showMessageDialog(this, "아이디와 이메일을 확인해 주세요", "아이디 이메일 불일치", JOptionPane.ERROR_MESSAGE);
 			} else {
 				new SMTPMailSendPassword(id, email);
-				JOptionPane.showMessageDialog(this, "비밀번호를 발송하였습니다.", "Send", JOptionPane.ERROR_MESSAGE);
-	
+				JOptionPane.showMessageDialog(this, "비밀번호를 발송하였습니다.", "Send", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 
