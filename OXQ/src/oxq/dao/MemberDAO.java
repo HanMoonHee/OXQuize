@@ -481,9 +481,12 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)	rs.close();
-				if (pstmt != null)	pstmt.close();
-				if (conn != null)	conn.close();
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -491,35 +494,37 @@ public class MemberDAO {
 		return searchedID;
 	}
 
-	// 아이디 찾기
-		public String getEmail(String email) { // 아이디 찾기
-		      //ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
-		      String searchedEmail = "";
-		      String sql = "select email from member where email = ?";
-		      getConnection();
-		      
-		      try {
-		         pstmt = conn.prepareStatement(sql);
-		         pstmt.setString(1, email);
-		         rs = pstmt.executeQuery();
+	// 이메일 가져오기
+	public String getEmail(String email) {
+		String searchedEamil = "";
+		String sql = "select id from member where email = ?";
+		getConnection();
 
-		         if (rs.next()) {
-		        	 searchedEmail = rs.getString(1);
-		         } 
-		      } catch (SQLException e) {
-		         e.printStackTrace();
-		      } finally {
-		         try {
-		            if (rs != null) rs.close();
-		            if (pstmt != null) pstmt.close();
-		            if (conn != null) conn.close();
-		         } catch (SQLException e) {
-		            e.printStackTrace();
-		         }
-		      }
-		      return searchedEmail;
-		   }
-	
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, email);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				searchedEamil = rs.getString(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return searchedEamil;
+	}
+
 	// 아이디의 정보값 가져오기
 	public MemberDTO getIdLIst(MemberDTO dto) {
 		getConnection();
@@ -557,4 +562,32 @@ public class MemberDAO {
 		}
 		return dto;
 	}
+
+	// 로그인 상태 가지고 오기
+//	public MemberDTO getMemberDTO(String id){
+//	       
+//        MemberDTO dto = new MemberDTO();
+//       
+//        try {
+//           
+//            getConnection();
+//            String sql = "select * from member where id=?";
+//            pstmt = conn.prepareStatement(sql);
+//            pstmt.setString(1, id);
+//           
+//            rs = pstmt.executeQuery();
+//           
+//            if(rs.next()){
+//                dto.setId(rs.getString("id"));
+//                dto.setNickName(rs.getString("nickname"));
+//                dto.setTel(rs.getString("tel"));
+//                dto.setEmail(rs.getString("email"));
+//               
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }      
+//       
+//        return dto;    
+//    }
 }
