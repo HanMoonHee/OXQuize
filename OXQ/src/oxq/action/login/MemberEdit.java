@@ -9,7 +9,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
-import javax.swing.DefaultListModel;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -27,13 +27,13 @@ public class MemberEdit extends JFrame implements ActionListener {
 	private JTextField idT, nickNameT, tel2T, tel3T, emailT;
 	private JPasswordField pwdT;
 	private JComboBox<String> tel1C, emailC;
-	private JButton updateB, cancelB, waitB;
+	private JButton updateB, cancelB;
 	private ArrayList<MemberDTO> list;
 	private MemberDTO dto;
 	private String id;
-	private String mail; // 이메일
-
-	// private MemberDTO dto;
+	private String mail, mail1, mail2, tel0, tel3; // 이메일
+	String[] tel1 = new String[3];
+	private Login login;
 
 	public MemberEdit() {
 		super("회원정보 수정");
@@ -63,12 +63,10 @@ public class MemberEdit extends JFrame implements ActionListener {
 
 		updateB = new JButton("개인정보 수정");
 		cancelB = new JButton("취소");
-		waitB = new JButton("대기실");
 
 		JPanel idP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 아이디
 		idP.add(idL);
 		idP.add(idT);
-		idP.add(waitB);
 
 		JPanel pwdP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 비밀번호
 		pwdP.add(pwdL);
@@ -76,6 +74,7 @@ public class MemberEdit extends JFrame implements ActionListener {
 
 		JPanel nickNameP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 닉네임
 		nickNameP.add(nickNameL);
+		nickNameL.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 12));
 		nickNameP.add(nickNameT);
 
 		JPanel telP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 전화번호
@@ -111,22 +110,23 @@ public class MemberEdit extends JFrame implements ActionListener {
 
 		setBounds(480, 150, 400, 490);
 		setVisible(true);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
-		
-		
 
-	}
-
-	public void event() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				setVisible(false);
+			}
+		});
+		
 		updateB.addActionListener(this);
 		cancelB.addActionListener(this);
-		waitB.addActionListener(this);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == updateB) {// 회원정보 수정
+			MemberDAO dao = MemberDAO.getInstance();
 			String tel = tel1C.getSelectedItem().toString() + hyphenL1.getText() + tel2T.getText() + hyphenL2.getText()
 					+ tel3T.getText();
 			String email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
@@ -136,28 +136,29 @@ public class MemberEdit extends JFrame implements ActionListener {
 			dto.setTel(tel);
 			dto.setEmail(email);
 			dto.setId(idT.getText());
-			if(pwdT.getPassword().length == 0) {
-				JOptionPane.showConfirmDialog(this, "비밀번호를 입력해주세요.", "비밀번호 공백", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			String pwd = pwdT.getText();
+			
+			if (pwdT.getPassword().length == 0) {
+				JOptionPane.showConfirmDialog(this, "비밀번호를 입력해주세요.", "비밀번호 공백", JOptionPane.DEFAULT_OPTION,	JOptionPane.INFORMATION_MESSAGE);
 				return;
-			} else if(nickNameT.getText().length() == 0) {
-				JOptionPane.showConfirmDialog(this, "닉네임을 입력해주세요.", "닉네임 공백", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			} else if (nickNameT.getText().length() == 0) {
+				JOptionPane.showConfirmDialog(this, "닉네임을 입력해주세요.", "닉네임 공백", JOptionPane.DEFAULT_OPTION,	JOptionPane.INFORMATION_MESSAGE);
 				return;
-			} else if(tel2T.getText().length() == 0) {
+			} else if (tel2T.getText().length() == 0) {
 				JOptionPane.showConfirmDialog(this, "전화번호를 입력해주세요.", "전화번호 공백", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
 				return;
-			} else if(tel3T.getText().length() == 0) {
+			} else if (tel3T.getText().length() == 0) {
 				JOptionPane.showConfirmDialog(this, "전화번호를 뒷 자리를 입력해주세요.", "전화번호 공백", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
 				return;
-			} else if(emailT.getText().length() == 0) {
+			} else if (emailT.getText().length() == 0) {
 				JOptionPane.showConfirmDialog(this, "이메일을 입력해주세요.", "이메일 공백", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
-			
+
 			int result = JOptionPane.showConfirmDialog(this, "프로필을 수정하시겠습니까?", "프로필 수정", JOptionPane.OK_CANCEL_OPTION);
 			if (result == JOptionPane.CANCEL_OPTION) {
 				JOptionPane.showConfirmDialog(this, "프로필 변경이 취소되었습니다..", "프로필 변경 취소", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
 			} else if (result == JOptionPane.OK_OPTION) {
-				MemberDAO dao = MemberDAO.getInstance();
 				int su = dao.updateMember(dto);
 				JOptionPane.showConfirmDialog(this, "프로필 변경 되었습니다.", "프로필 변경 완료", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
 				setVisible(false);
@@ -165,49 +166,45 @@ public class MemberEdit extends JFrame implements ActionListener {
 				return;
 			}
 
-			
-
-		} else if (e.getSource() == cancelB) {//창 종료
+		} else if (e.getSource() == cancelB) {// 창 닫기
 			setVisible(false);
-		} else if (e.getSource() == waitB) {// 유저 정보  가져오기 (임시 방편 "수정 필요!!!!" )
-			MemberDTO dto;
+		}
+	}
 
-			MemberDAO dao = MemberDAO.getInstance();
-			dto = dao.loginDTO("test1");
+	public void Info(String id) {// 회원정보 불러오기
+		MemberDAO dao = new MemberDAO();
+		MemberDTO dto = dao.loginDTO(id);
+		System.out.println("아이디" + id);
+		//dto = dao.loginDTO(id);
 
-			// 이메일 값 가져오기
-			String mail0 = dto.getEmail();
-			// @ 인덱스 찾기
-			int idx = mail0.indexOf("@");
-			// 이메일 앞부분 자르기
-			String mail1 = mail0.substring(0, idx);
-			// 이메일 뒷부분 자르기
-			String mail2 = mail0.substring(idx + 1);
+		// 이메일 값 가져오기
+		String mail0 = dto.getEmail();
+		System.out.println(mail0);
+		// @ 인덱스 찾기
+		int idx = mail0.indexOf("@");
+		// 이메일 앞부분 자르기
+		String mail1 = mail0.substring(0, idx);
+		// 이메일 뒷부분 자르기
+		String mail2 = mail0.substring(idx + 1);
 
-			// 전화번호 값 가져오기
-			String tel0 = dto.getTel();
-			// - 인덱스
-			String[] tel = tel0.split("-");
+		// 전화번호 값 가져오기
+		String tel0 = dto.getTel();
+		// - 인덱스
+		String[] tel4 = tel0.split("-");
 
-			String[] tel1 = new String[3];
+		String[] tel1 = new String[3];
 
-			for (int i = 0; i < tel.length; i++) {
-				tel1[i] = tel[i];
-			}
-
-			idT.setText(dto.getId());
-			nickNameT.setText(dto.getNickName());
-			tel1C.setSelectedItem(tel[0]);
-			tel2T.setText(tel[1]);
-			tel3T.setText(tel[2]);
-			emailT.setText(mail1);
-			emailC.setSelectedItem(mail2);
-
+		for (int i = 0; i < tel4.length; i++) {
+			tel1[i] = tel4[i];
 		}
 
+		idT.setText(dto.getId());
+		nickNameT.setText(dto.getNickName());
+		tel1C.setSelectedItem(tel1[0]);
+		tel2T.setText(tel1[1]);
+		tel3T.setText(tel1[2]);
+		emailT.setText(mail1);
+		emailC.setSelectedItem(mail2);
 	}
 
-	public static void main(String[] args) {
-		new MemberEdit().event();
-	}
 }
