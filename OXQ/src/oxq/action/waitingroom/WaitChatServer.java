@@ -12,7 +12,7 @@ public class WaitChatServer {
 	public WaitChatServer() {
 		try {
 			ss = new ServerSocket(9500);
-			System.out.println("서버준비완료");
+			System.out.println("대기방 서버 준비완료");
 
 			list = new ArrayList<WaitChatHandler>();
 
@@ -31,4 +31,3 @@ public class WaitChatServer {
 		new WaitChatServer();
 	}
 }
-

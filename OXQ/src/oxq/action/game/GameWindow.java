@@ -1,6 +1,5 @@
 package oxq.action.game;
 
-
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -17,6 +16,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -49,17 +49,17 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 	private int winCnt; // 플레이어가 이긴 횟수
 
 	private MemberDAO daoMember = MemberDAO.getInstance(); // 결과(정답수/오답수/이긴 횟수를 디비에 저장)
-	private MemberDTO memberDTO; // 
-	
+	private MemberDTO memberDTO; //
+
 	private QuestionsDAO daoQuestion = QuestionsDAO.getInstance(); // ox문제와 답(문제를 디비에서 불러와서 문제창에 뿌려주기)
 	private ArrayList<QuestionsDTO> listlist = daoQuestion.getQuestionList(); // 디비에서 불러온 각각의 문제를 담은 리스트
-	
+
 	private RoomDAO daoRoom = RoomDAO.getInstance(); // 디비에 저장된 해당 방에대한 정보
 	private ArrayList<String> nicksss; // 해당방에 있는 플레이어들의 닉네임
 
 	// 스레드 풀
-	private ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); // 채팅과 게임을 동시에 돌아가게 해야하니까
-
+	private ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); // 채팅과 게임을 동시에 돌아가게
+																										
 	// 화면
 	private JButton startB; // 시작버튼
 	private JButton exitB; // 나가기 버튼 (전체 대기실로 돌아가기)
@@ -111,12 +111,16 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 
+	// 지금 방에 입장한 nickname 가지고 dto 저장
+	private MemberDTO nowdto;
+
 	public GameWindow(String nickname, String room_name) { // 생성자
 		this.nickname = nickname;
 		this.room_name = room_name;
-		this.playerCnt = daoRoom.getPlayerCnt();
+		this.playerCnt = daoRoom.getPlayerCnt(room_name);
 
-// 게임화면 레이아웃 -----------------------------------------------------------------------------------
+		// 게임화면 레이아웃
+		// -----------------------------------------------------------------------------------
 		startB = new JButton("Game Start"); // 게임 시작 버튼
 		exitB = new JButton("Exit"); // 나가기 버튼
 
@@ -144,7 +148,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 				.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 		Dimension d4 = new Dimension();
 		d4.setSize(140, 140);
-		questionArea.setFont(new Font("Gothic", Font.BOLD, 50));
+		questionArea.setFont(new Font("Gothic", Font.BOLD, 23));
 		questionArea.setHorizontalAlignment(JTextField.CENTER);
 
 		timeT = new JTextField(Integer.toString(timer)); // 타이머창
@@ -173,7 +177,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		north.add(questionArea);
 		north.add(timeT);
 
-///////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////
 
 		center1 = new JPanel(); // 1번 플레이어 (닉네임+아이콘)
 		nicknameTp1 = new JTextField(); // 1번 플레이어 닉네임
@@ -196,7 +200,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		center1.add(center1_nick);
 		center1.add(center1_icon);
 
-///////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////
 
 		center2 = new JPanel(); // ox버튼+정답공개창
 		answerL = new JLabel();
@@ -216,7 +220,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		jb[0].setEnabled(false); // 게임 시작 전에는 ox버튼 비활성
 		jb[1].setEnabled(false);
 
-///////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////
 
 		center3 = new JPanel(); // 2번 플레이어 (닉네임+아이콘)
 		nicknameTp2 = new JTextField(); // 2번 플레이어 닉네임
@@ -235,7 +239,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		center3.add(center3_nick);
 		center3.add(center3_icon);
 
-///////////////////////////////////////////////////////////////	
+		///////////////////////////////////////////////////////////////
 
 		center = new JPanel(new GridLayout()); // 1번 플레이어+ox+2번 플레이어
 		center.add(center1);
@@ -253,6 +257,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		player02 = new JLabel(playerIcon02);
 
 		// 윈도우창
+		setTitle(room_name);
 		setResizable(false);
 		setBounds(480, 150, 900, 800);
 		setVisible(true);
@@ -261,30 +266,27 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		service();
 
 	}
-	
-//----------------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------------
 	public void service() {
-		
+
 		try {
-			
+
 			socket = new Socket("localhost", 9600); // "localhost" 포트넘버
-			
+
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
-			
+
 			// 서버로 보내기 - 방에 입장 했을때
 			PlayInfoDTO dto = new PlayInfoDTO(); // 게임방에 참가한 플레이어의 dto
 			dto.setCommand(PlayInfo.JOIN);
-			dto.setNickname(nickname); 
-//			dto.setCorrect(0);
-//			dto.setWrong(0);
-			dto.setPlayerCnt(playerCnt);
-			
+			dto.setNickname(nickname);
+
 			oos.writeObject(dto);
 			oos.flush();
-			
+
 			memberDTO = daoMember.getOXHistory(nickname); // 이전기록
-			
+
 		} catch (UnknownHostException e) {
 			System.out.println("서버를 찾을 수 없습니다");
 			e.printStackTrace();
@@ -294,11 +296,11 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		
+
 		// 스레드 생성 시작
 		Thread t = new Thread(this);
 		t.start();
-		
+
 		// 이벤트
 		input.addActionListener(this); // 채팅창에 메세지를 치고 엔터를 누르면 이벤트 발생
 		exitB.addActionListener(this); // 나가기 버튼 클릭
@@ -307,7 +309,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		jb[1].addActionListener(this); // X버튼
 	}
 
-//----------------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------------
 	public void checkAnsw() {
 		if (listlist.get(round - 1).getAnswer() == 1 && jb[0].isSelected()) { // 정답 O, 선택 O
 			correctCnt++;
@@ -321,12 +323,12 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		if (listlist.get(round - 1).getAnswer() == 0 && jb[1].isSelected()) { // 정답 X, 선택 X
 			correctCnt++;
 		}
-//		System.out.println("정답: " + correctCnt + " | " + "오답: " + wrongCnt);
+//	      System.out.println("정답: " + correctCnt + " | " + "오답: " + wrongCnt);
 		jb[0].setSelected(false);
 		jb[1].setSelected(false);
 	}
 
-//----------------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------------
 
 	public void countTime() { // 문제풀이 제한 시간까지 카운트
 		while (true) {
@@ -337,7 +339,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 				e.printStackTrace();
 			}
 			timer--;
-			
+
 			if (timer == -1) { // 시간 끝
 
 				jb[0].setEnabled(false);
@@ -352,7 +354,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 				checkAnsw(); // 답 체크
 
 				try {
-					Thread.sleep(100); // 다음 문제 시작 전까지 잠깐 멈춤
+					Thread.sleep(3000); // 다음 문제 시작 전까지 잠깐 멈춤
 
 					jb[0].setSelectedIcon(icon_o);
 					jb[1].setSelectedIcon(icon_x);
@@ -368,9 +370,9 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		}
 	}
 
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		// 채팅 창
 		if (e.getSource() == input) {
 			// 서버로 보내기
 			PlayInfoDTO dto = new PlayInfoDTO();
@@ -383,15 +385,16 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 				e1.printStackTrace();
 			}
 			input.setText("");
-		} else if (e.getSource() == exitB) {
-
+		}
+		// 나가기 버튼
+		else if (e.getSource() == exitB) {
 			PlayInfoDTO dto = new PlayInfoDTO();
 			dto.setCommand(PlayInfo.EXIT);
-			dto.setPlayerCnt(playerCnt - 1);
-			daoRoom.updatePlayCnt(dto,room_name);
+			daoRoom.updatePlayCnt((playerCnt - 1), room_name);
 			daoRoom.updatePlayer1(nickname);
 			daoRoom.updatePlayer2(nickname);
-			System.out.println("지금 플레이어 카운트=" + dto.getPlayerCnt());
+
+			System.out.println("지금 플레이어 카운트=" + daoRoom.getPlayerCnt(room_name));
 
 			try {
 				oos.writeObject(dto);
@@ -399,9 +402,11 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-		} else if (e.getSource() == startB) { // 게임시작 버튼
+		}
+		// 게임 시작 버튼
+		else if (e.getSource() == startB) { // 게임시작 버튼
 			try {
-
+				// exitB.setEnabled(false);
 				PlayInfoDTO dto = new PlayInfoDTO(); // 시작하면 타이머도 시작
 				dto.setCommand(PlayInfo.TIMER);
 				oos.writeObject(dto);
@@ -416,7 +421,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 
 			PlayInfoDTO dto = new PlayInfoDTO();
 			dto.setCommand(PlayInfo.SEND);
-			dto.setMessage(nickname + " : O 선택!!");
+			dto.setMessage("O 선택!!!");
 			try {
 				oos.writeObject(dto);
 				oos.flush();
@@ -430,30 +435,29 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 
 			PlayInfoDTO dto = new PlayInfoDTO();
 			dto.setCommand(PlayInfo.SEND);
-			dto.setMessage(nickname + " : X 선택!!");
+			dto.setMessage("X 선택!!!");
 			try {
 				oos.writeObject(dto);
 				oos.flush();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-
 		}
 	}
 
 	@Override
 	public void run() {
-		// 서버로부터 받기
-		while (true) {
-			try {
-
-				PlayInfoDTO dto = (PlayInfoDTO) ois.readObject();
-
+		PlayInfoDTO dto = null;
+		try {
+			while (true) {
+				// 서버로부터 받기
+				dto = (PlayInfoDTO) ois.readObject();
 				if (dto.getCommand() == null || dto.getCommand() == PlayInfo.EXIT) {
 					oos.close();
 					ois.close();
 					es.shutdownNow();
 					socket.close();
+
 					dispose();
 					break;
 				}
@@ -463,17 +467,18 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 					int pos = output.getText().length(); // 스크롤 자동
 					output.setCaretPosition(pos);
 
-					System.out.println("플레이어카운트:" + dto.getPlayerCnt());
+//	                System.out.println("플레이어카운트:" + dto.getPlayerCnt());
+					System.out.println("플레이어 카운트:" + daoRoom.getPlayerCnt(room_name));
 					nicksss = daoRoom.getNicksss(room_name);
 
-					if (dto.getPlayerCnt() == 1) { // 1번 플레이어
+					if (daoRoom.getPlayerCnt(room_name) == 1) { // 1번 플레이어
 						center1_icon.add(player01); // 플레이어 아이콘
-						player02.setIcon(null);
+	                  	player02.setIcon(null);
 						center3_icon.add(player02);
 						nicknameTp1.setText(nicksss.get(0));
 					}
 
-					else if (dto.getPlayerCnt() == 2) {
+					else if (daoRoom.getPlayerCnt(room_name) == 2) {
 						center1_icon.add(player01); // 1번 플레이어
 						center3_icon.add(player02); // 2번 플레이어
 						nicknameTp1.setText(nicksss.get(0));
@@ -483,22 +488,23 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 					try {
 						Thread.sleep(2000);
 					} catch (InterruptedException e) {
-
 						e.printStackTrace();
 					}
 				}
 
 				else if (dto.getCommand() == PlayInfo.TIMER) { // 스레드풀 게임이 진행되는 동안에도 다른 command들이 들어 갈 수 있게
+					PlayInfoDTO infodto = new PlayInfoDTO();
+					
 					es.submit(new Runnable() {
 						@Override
 						public void run() {
 							while (true) {
 								round++;
-								
-								if(round>5) {
+
+								if (round > 5) {
 									break;
 								}
-								
+
 								System.out.println("라운드=" + round);
 								startB.setEnabled(false);
 
@@ -522,48 +528,50 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 								timer = 5;
 
 								if (round == 5) { // 게임 끝
-									//dto.setCommand(PlayInfo.SEND);
-//									questionArea.setText("<<<게임종료>>>");
-									
 									int p1Score = daoRoom.getP1Score(room_name);
 									int p2Score = daoRoom.getP2Score(room_name);
-//									System.out.println("p1Score="+p1Score);
-//									System.out.println("p2Score="+p2Score);
-									
-									if(p1Score>p2Score) { // p1승
-										questionArea.setText(nicksss.get(0)+" 승리!!!");
-									} else if(p2Score>p1Score) { //p2승
-										questionArea.setText(nicksss.get(1)+" 승리!!!");
+
+									if (p1Score > p2Score) { // p1승
+										questionArea.setText(nicksss.get(0) + " 승리!!!");
+										if (nickname.equals(nicksss.get(0))) { // 내가 1p 일 경우
+											winCnt++;
+										}
+									} else if (p2Score > p1Score) { // p2승
+										questionArea.setText(nicksss.get(1) + " 승리!!!");
+										if (nickname.equals(nicksss.get(1))) { // 내가 1p 일 경우
+											winCnt++;
+										}
 									} else { // 비김
-										questionArea.setText("비김");
+										questionArea.setText("비김!!!");
 									}
-									
+
 									memberDTO.setO_cnt(correctCnt + memberDTO.getO_cnt());
 									memberDTO.setX_cnt(wrongCnt + memberDTO.getX_cnt());
-//									memberDTO.setWin_cnt(winCnt+memberDTO.getWin_cnt());
+									memberDTO.setWin_cnt(winCnt + memberDTO.getWin_cnt());
 
 									int su = daoMember.updateOXHistory(nickname, memberDTO);
 									System.out.println("update 결과=" + su);
 
-									try {
-										oos.writeObject(dto);
-										oos.flush();
-									} catch (IOException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
+//									try {
+//										oos.writeObject(infodto);
+//										oos.flush();
+//									} catch (IOException e) {
+//										e.printStackTrace();
+//									}
 									break;
+									//startB.setEnabled(true);
+									//exitB.setEnabled(true);
+
 								}
 							}
 						}
 					});
 				}
-
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }
