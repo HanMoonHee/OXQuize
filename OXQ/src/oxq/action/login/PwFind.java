@@ -91,20 +91,17 @@ public class PwFind extends JFrame implements ActionListener, KeyListener {
 		email = emailT.getText();
 		list = dao.getMemberList();
 
-		// 아이디를입력하세요
-		for (MemberDTO dto : list) {
-			if (id.length() <= 0) {
-				JOptionPane.showMessageDialog(this, "아이디를 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
-			} else if (id.length() > 0 && email.length() <= 0) {
-				JOptionPane.showMessageDialog(this, "이메일을 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
-			} else if (!id.equals(dto.getId()) || !email.equals(dto.getEmail())) {
-				JOptionPane.showMessageDialog(this, "아이디와 이메일을 확인해 주세요", "아이디 이메일 불일치", JOptionPane.ERROR_MESSAGE);
-			} else {
-				new SMTPMailSendPassword(id, email);
-				JOptionPane.showMessageDialog(this, "비밀번호를 발송하였습니다.", "Send", JOptionPane.ERROR_MESSAGE);
-	
-			}
+		if (id.length() <= 0) {
+			JOptionPane.showMessageDialog(this, "아이디를 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
+		} else if (id.length() > 0 && email.length() <= 0) {
+			JOptionPane.showMessageDialog(this, "이메일을 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
+		} else if (!id.equals(dao.getId(id)) || !email.equals(dao.getEmail(email))) {
+			JOptionPane.showMessageDialog(this, "아이디와 이메일을 확인해 주세요", "아이디 이메일 불일치", JOptionPane.ERROR_MESSAGE);
+		} else {
+			new SMTPMailSendPassword(id, email);
+			JOptionPane.showMessageDialog(this, "비밀번호를 발송하였습니다.", "Send", JOptionPane.INFORMATION_MESSAGE);
 		}
+
 
 	}
 
