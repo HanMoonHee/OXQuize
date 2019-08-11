@@ -491,6 +491,35 @@ public class MemberDAO {
 		return searchedID;
 	}
 
+	// 아이디 찾기
+		public String getEmail(String email) { // 아이디 찾기
+		      //ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
+		      String searchedEmail = "";
+		      String sql = "select email from member where email = ?";
+		      getConnection();
+		      
+		      try {
+		         pstmt = conn.prepareStatement(sql);
+		         pstmt.setString(1, email);
+		         rs = pstmt.executeQuery();
+
+		         if (rs.next()) {
+		        	 searchedEmail = rs.getString(1);
+		         } 
+		      } catch (SQLException e) {
+		         e.printStackTrace();
+		      } finally {
+		         try {
+		            if (rs != null) rs.close();
+		            if (pstmt != null) pstmt.close();
+		            if (conn != null) conn.close();
+		         } catch (SQLException e) {
+		            e.printStackTrace();
+		         }
+		      }
+		      return searchedEmail;
+		   }
+	
 	// 아이디의 정보값 가져오기
 	public MemberDTO getIdLIst(MemberDTO dto) {
 		getConnection();
