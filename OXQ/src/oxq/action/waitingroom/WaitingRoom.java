@@ -31,14 +31,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import oxq.action.game.GameWindow;
+import oxq.action.login.MemberEdit;
 import oxq.dao.MemberDAO;
 import oxq.dao.RoomDAO;
 import oxq.dto.MemberDTO;
 import oxq.dto.RoomDTO;
 
-public class WaitingRoom extends JFrame implements ActionListener, Runnable {
+public class WaitingRoom extends JFrame implements ActionListener, Runnable, ListSelectionListener {
 	// 방만들기, 전송 버튼
 	private JButton roomB, sendB, myInfoB;
 	// 채팅창
@@ -65,15 +68,17 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 	private RoomDialog roomDialog;
 	// 스레드 풀
 	private ExecutorService executorService;
-	
+	// 방 이름
+	private String roomName;
+
 	public WaitingRoom(MemberDTO mydto) {
 		super("게임대기실");
-		id = mydto.getId();	// 로그인 한 사람 아이디
-		nickName = mydto.getNickName();	// 로그인 한 사람 닉네임
-		
+		id = mydto.getId(); // 로그인 한 사람 아이디
+		nickName = mydto.getNickName(); // 로그인 한 사람 닉네임
+
 		// 스레드풀
-		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());	// 스레드풀 생성
-		
+		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); // 스레드풀 생성
+
 		// 버튼
 		roomB = new JButton("방만들기");
 		sendB = new JButton("보내기");
@@ -104,19 +109,19 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 		nicknameL2.setFont(new Font("고딕", Font.BOLD, 18));
 		rankL.setFont(new Font("고딕", Font.BOLD, 15));
 		userL.setFont(new Font("고딕", Font.BOLD, 15));
-		
+
 		// 방 리스트
 		roomList = new JList<RoomDTO>(new DefaultListModel<RoomDTO>());
 		roomModel = (DefaultListModel<RoomDTO>) roomList.getModel();
-		
+
 		JScrollPane roomScroll = new JScrollPane(roomList);
 		roomScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		roomScroll.setPreferredSize(new Dimension(790, 400));
-		
+
 		// 랭킹 리스트
 		rankList = new JList<String>(new DefaultListModel<String>());
 		rankModel = (DefaultListModel<String>) rankList.getModel();
-		
+
 		JScrollPane rankScroll = new JScrollPane(rankList);
 		rankScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		rankScroll.setPreferredSize(new Dimension(170, 400));
@@ -124,11 +129,11 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 		// 유저 리스트
 		userList = new JList<MemberDTO>(new DefaultListModel<MemberDTO>());
 		userModel = (DefaultListModel<MemberDTO>) userList.getModel();
-		
+
 		JScrollPane userScroll = new JScrollPane(userList);
 		userScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		userScroll.setPreferredSize(new Dimension(170, 240));
-		
+
 		// 채팅 textfield + 보내기 버튼
 		JPanel chatBottom = new JPanel(new BorderLayout());
 		chatBottom.add("Center", input);
@@ -194,32 +199,32 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
 		setVisible(true);
-		
+
 		// 랭킹 리스트
 		RoomDAO rankdao = RoomDAO.getInstance();
 		ArrayList<MemberDTO> rankArrayList = rankdao.getRankList();
-		
+
 		for (MemberDTO dto : rankArrayList) {
 			rankModel.addElement(dto.getNickName() + " 1등 횟수 : \t" + dto.getWin_cnt());
 		}
-				
+
 		// 디비에 저장된 룸 불러와서 roomModel에 저장
 		RoomDAO roomdao = RoomDAO.getInstance();
 		ArrayList<RoomDTO> roomArrayList = roomdao.getRoomList();
-						
+
 		for (RoomDTO roomdto : roomArrayList) {
 			roomModel.addElement(roomdto);
 		}
-	
-		//종료 버튼 눌렀을때
-		addWindowListener(new WindowAdapter() {	
+
+		// 종료 버튼 눌렀을때
+		addWindowListener(new WindowAdapter() {
 			MemberDAO exitdao = MemberDAO.getInstance();
-			
+
 			@Override
 			public void windowClosing(WindowEvent e) {
 				if (oos == null || ois == null)
 					System.exit(0);
-				exitdao.LogoutFlag(id);
+				exitdao.logoutFlag(id);
 				WaitInfoDTO dto = new WaitInfoDTO();
 				dto.setCommand(WaitInfo.EXIT);
 				try {
@@ -233,13 +238,14 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 		
 		// 방목록 눌렀을때 이벤트
 		roomList.addMouseListener(new MouseAdapter() {
+			// 더블 클릭했을때 들어가게 해주기
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JList list = (JList)e.getSource();
-				if(e.getClickCount() == 2) { // 더블클릭
-					int index = list.locationToIndex(e.getPoint());
-					System.out.println(index+"번 리스트방 입장");
-					enterGame(index);
+				JList list = (JList) e.getSource();
+				if (e.getClickCount() == 2) { // 더블클릭
+					int index = list.locationToIndex(e.getPoint());	// 현재 인덱스에서 클릭한 위치
+					System.out.println(index + "번 리스트방 입장");
+					enterGame(index, roomName);
 				}
 			}
 		});
@@ -248,7 +254,7 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 	public void service() {
 		try {
 			// 소켓 생성
-			socket = new Socket("localhost", 9500); // "loaclhost"
+			socket = new Socket("localhost", 9500); // "localhost"
 			// oos, ois 생성
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
@@ -270,36 +276,45 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 		sendB.addActionListener(this);
 		input.addActionListener(this);
 		roomB.addActionListener(this);
+		roomList.addListSelectionListener(this);
+		myInfoB.addActionListener(this);
 		// 쓰레드
 		Thread thread = new Thread(this);
 		thread.start();
 	}
-	
+
 	// 방 리스트 더블 클릭시 들어가는 액션
-	public void enterGame(int index) {
+	public void enterGame(int index, String roomName) {
+		System.out.println("들어가려고 클릭한 방이름: " + roomName);
 		RoomDAO roomdao = RoomDAO.getInstance();
 		ArrayList<RoomDTO> room = roomdao.getRoomList();
-		System.out.println("방 인덱스 번호" +room.get(index));
-		
+
 		MemberDAO dao = MemberDAO.getInstance();
 		MemberDTO dto = dao.loginDTO(id);
-		
-		if (room.get(index).getRoomPwd() == null) {	// 비밀번호가 없는 방
-			int ans = JOptionPane.showConfirmDialog(this, "입장 하시겠습니까?", "입장", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
-			if (ans == 0) {	// 입장 버튼 눌렀을때
-//				roomdao.updatePlayer2(dto.getNickName(), roomdao.getRoomNum());	// 디비에 player2 update
-				//new GameWindow(dto.getNickName(), 2, roomdao.getRoomNum());	//palycnt 2로 넣어주기
+
+		if (room.get(index).getRoomPwd() == null) { // 비밀번호가 없는 방
+			int ans = JOptionPane.showConfirmDialog(this, "입장 하시겠습니까?", "입장", JOptionPane.YES_NO_OPTION,
+					JOptionPane.PLAIN_MESSAGE);
+			if (ans == 0) { // 입장 버튼 눌렀을때
+				// 디비에 player2 update
+				int su = roomdao.updateRoom(dto.getNickName(), roomName);
+				if (su > 0)
+					System.out.println(su + "-- player2 정보 업데이트 ");
+				new GameWindow(dto.getNickName(), roomName);
 			}
 		} else { // 비밀번호 있는 방
 			String pwd = JOptionPane.showInputDialog(this, "비밀번호를 입력하세요");
 			System.out.println(pwd);
-			if(pwd != null) {
-				if(room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 일치
-//					roomdao.updatePlayer2(dto.getNickName(), roomdao.getRoomNum());	// 디비에 player2 update
-					//new GameWindow(dto.getNickName(), 2, roomdao.getRoomNum());	//palycnt 2로 넣어주기
-				} else if(!room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 틀림
+			if (pwd != null) {
+				if (room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 일치
+					// 디비에 player2 update
+					int su = roomdao.updateRoom(dto.getNickName(), roomName);
+					if (su > 0)
+						System.out.println(su + "-- player2 정보 업데이트 ");
+					new GameWindow(dto.getNickName(), roomName);
+				} else if (!room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 틀림
 					JOptionPane.showMessageDialog(this, "비밀번호가 다릅니다", "오류", JOptionPane.ERROR_MESSAGE);
-				} 
+				}
 			}
 		}
 	}
@@ -319,34 +334,33 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 					System.exit(0);
 				} else if (dto.getCommand() == WaitInfo.SEND) {
 					output.append(dto.getMessage() + "\n");
-					
-					if((dto.getMessage().indexOf("입장하였습니다") != -1) || (dto.getMessage().indexOf("퇴장하였습니다") != -1)) {
+
+					if ((dto.getMessage().indexOf("입장하였습니다") != -1) || (dto.getMessage().indexOf("퇴장하였습니다") != -1)) {
 						// 유저목록 스레드
 						executorService.submit(new Runnable() {
-
 							@Override
 							public void run() {
 								RoomDAO memberdao = RoomDAO.getInstance();
-								ArrayList<MemberDTO> memberArrayList = memberdao.getMemberList();
-								
-								userModel.clear();	// 리스트 비우고 다시 써주려고 clear()
-								
+								ArrayList<MemberDTO> memberArrayList = memberdao.getLoginMemberList();
+
+								userModel.clear(); // 리스트 비우고 다시 써주려고 clear()
+
 								for (MemberDTO dto : memberArrayList) {
 									userModel.addElement(dto);
 								}
 							}
-							
 						});
 					}
 					
 					int position = output.getText().length(); // 스크롤 자동
 					output.setCaretPosition(position);
-				} else if (dto.getCommand() == WaitInfo.ROOM) {	//방생성 받는곳
+					
+				} else if (dto.getCommand() == WaitInfo.ROOM) { // 방생성 받는곳
 					RoomDAO roomdao = RoomDAO.getInstance();
 					ArrayList<RoomDTO> roomArrayList = roomdao.getRoomList();
-					
-					roomModel.clear();		
-					
+
+					roomModel.clear();
+
 					for (RoomDTO roomdto : roomArrayList) {
 						roomModel.addElement(roomdto);
 					}
@@ -356,15 +370,20 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+			MemberDAO exitdao = MemberDAO.getInstance();
+			exitdao.logoutFlag(id);
 		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == sendB || e.getSource() == input) {	// 보내기 버튼
+		// 보내는쪽
+		// 보내기 버튼
+		if (e.getSource() == sendB || e.getSource() == input) { 
 			// TextField의 내용 서버에 보내기
 			WaitInfoDTO dto = new WaitInfoDTO();
 			String message = input.getText(); // 텍스트필드 내용 가지고오기
+			
 			if (message.toLowerCase().equals("exit")) {
 				dto.setCommand(WaitInfo.EXIT); // 종료
 			} else {
@@ -377,29 +396,57 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable {
 			} catch (IOException io) {
 				io.printStackTrace();
 			}
+			
 			input.setText(""); // 서버에 보내주고 텍스트필드 비우기
-		} else if (e.getSource() == roomB) {	// 방만들기 버튼
+			
+		} 
+		// 방만들기 버튼
+		else if (e.getSource() == roomB) { 
 			MemberDAO dao = MemberDAO.getInstance();
 			MemberDTO dto = dao.loginDTO(id);
-			roomDialog = new RoomDialog(this, dto);
 			
+			roomDialog = new RoomDialog(this, dto);	//방만들기 모달 다이알로그 만들기
 			roomDialog.setVisible(true);
-			RoomDAO roomdao = RoomDAO.getInstance();
-			String roomName = roomdao.getRoomName(dto.getNickName());
-			System.out.println("방 이름: " + roomName);
 			
-			if(roomDialog.getRoom_ok() == 1) { // 방만들어졌을때 대기방 닫고 게임방 키기
-				setVisible(false);
+			RoomDAO roomdao = RoomDAO.getInstance();
+			String roomName = roomdao.getRoomName(dto.getNickName()); // 만들어진 방이름 가져옴
+			System.out.println("방 이름: " + roomName);
+
+			try {
+				// 서버에게 방만들어짐 보내기
+				WaitInfoDTO infodto = new WaitInfoDTO(); // 서버에 필요한 dto
+				infodto.setCommand(WaitInfo.ROOM); // 방만든 상태라고 서버에 알려주기
 				
-				new GameWindow(dto.getNickName(), roomName).service();	// 닉네임, 1, 방 시퀀스번호 넘겨줌
-			} else if(roomDialog.getRoom_ok() == 0) { // 방안만들어졌을때
+				oos.writeObject(infodto);
+				oos.flush();				
 				
+			} catch (IOException io) {
+				io.printStackTrace();
 			}
+			
+			if (roomDialog.getRoom_ok() == 1) { // 방만들어졌을때 대기방 닫고 게임방 키기
+				new GameWindow(dto.getNickName(), roomName).service(); // 닉네임, 방이름 넘겨주기
+			} else if (roomDialog.getRoom_ok() == 0) { // 방안만들어졌을때
+				return;
+			}
+		} 
+		// 회원정보 수정
+		else if (e.getSource() == myInfoB) {
+	         new MemberEdit().Info(id);
+	    }
+	}
+	
+	// 방목록 리스트 이벤트  - 리스트 눌렀을때 방이름
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		if (roomList.getSelectedIndex() == -1)	// 삭제 해서 값이 없거나 이상하면 return해서 아래 실행 X
+			return;
+		
+		if(!e.getValueIsAdjusting()) { // 이벤트 발생하자마자 클릭하면 true 버튼 때면 false 버튼 땔때 실행함.
+			RoomDTO dto = roomList.getSelectedValue();	// 클릭한 부분의 객체
+
+			roomName = dto.getRoomName();
+			System.out.println("리스트 눌렀을때 방이름 : " + roomName);
 		}
 	}
-
-//	public static void main(String[] args) {
-//		new WaitingRoom().service();
-//	}
-
 }

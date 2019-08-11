@@ -10,7 +10,6 @@ public class GameServerObject {
 	public ArrayList<GameHandlerObject> list;
 
 	public GameServerObject() {
-
 		try {
 			ss = new ServerSocket(9600);
 			System.out.println("게임방 서버 준비 완료");
@@ -19,18 +18,15 @@ public class GameServerObject {
 
 			while (true) {
 				Socket socket = ss.accept();
-
 				GameHandlerObject handler = new GameHandlerObject(socket, list);
 				handler.start();
+			
 				list.add(handler);
-				System.out.println(list.size());
 			}
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
 	public static void main(String[] args) {
 		new GameServerObject();
 	}
