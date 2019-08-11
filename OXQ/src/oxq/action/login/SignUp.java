@@ -11,6 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -32,6 +33,8 @@ public class SignUp extends JFrame implements ActionListener {
 	private JButton idB, emailB, addB, cancelB, clearB;
 	private String id, email;
 	private SMTPMailSendManager smtp;
+	
+	
 	// private MemberDTO dto;
 
 	public SignUp() {
@@ -48,7 +51,7 @@ public class SignUp extends JFrame implements ActionListener {
 		golL = new JLabel("@");
 		pwdEqL = new JLabel("비밀번호 불일치");
 		pwdEqL.setVisible(false);
-		emailCKL = new JLabel("    인증번호 확인 : ");
+		emailCKL = new JLabel("    인증번호확인 : ");
 
 		idT = new JTextField(10);
 		pwdT = new JPasswordField(10);
@@ -76,11 +79,13 @@ public class SignUp extends JFrame implements ActionListener {
 
 		JPanel idP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 아이디
 		idP.add(idL);
+		idL.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 21));
 		idP.add(idT);
 		idP.add(idB);
 
 		JPanel pwdP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 비밀번호
 		pwdP.add(pwdL);
+		pwdL.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 21));
 		pwdP.add(pwdT);
 
 		JPanel pwdEqP = new JPanel();
@@ -92,6 +97,7 @@ public class SignUp extends JFrame implements ActionListener {
 
 		JPanel nickNameP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 닉네임
 		nickNameP.add(nickNameL);
+		nickNameL.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 35));
 		nickNameP.add(nickNameT);
 
 		JPanel telP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 전화번호
@@ -204,16 +210,16 @@ public class SignUp extends JFrame implements ActionListener {
 			MemberDAO dao = MemberDAO.getInstance();
 			email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
 			System.out.println(email);
-			ArrayList<MemberDTO> arrayList = dao.getMemberList();
-			for (MemberDTO dto : arrayList) {
-				if (email.equals(dto.getEmail())) {
-					JOptionPane.showMessageDialog(this, "이미 존재하는 이메일 입니다.", "이메일 중복", JOptionPane.ERROR_MESSAGE);
-					return;
-				} else if (!email.equals(dto.getEmail())) {
-					smtp = new SMTPMailSendManager();
-					JOptionPane.showMessageDialog(this, "인증번호를 발송하였습니다.", "인증번호 전송", JOptionPane.INFORMATION_MESSAGE);
-					break;
-				}
+			if(emailT.getText().equals("")) {
+				JOptionPane.showConfirmDialog(this, "이메일을 입력하세요.", "입력 오류", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
+			} else if(email.equals(dao.getEmail(email))) {
+				JOptionPane.showConfirmDialog(this, "이미 존재하는 이메일 입니다.", "사용 불가", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
+			} else if(!email.equals(dao.getEmail(email))) {
+				smtp = new SMTPMailSendManager();
+				JOptionPane.showConfirmDialog(this, "인증번호를 발송했습니다.", "인증번호 발송", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 			}
 		} else if (e.getSource() == addB) { // 회원가입
 			MemberDAO dao = MemberDAO.getInstance();
@@ -222,9 +228,8 @@ public class SignUp extends JFrame implements ActionListener {
 			if (id.equals(dao.getId(id))) {
 				JOptionPane.showConfirmDialog(null, "중복 확인을 해 주세요.", "아이디 중복", JOptionPane.DEFAULT_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
-			}
-
-			if (id.length() == 0) {
+				return;
+			} else if (id.length() == 0) {
 				JOptionPane.showConfirmDialog(null, "아이디를 확인 해 주세요.", "에러", JOptionPane.DEFAULT_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
 				return;
@@ -253,6 +258,7 @@ public class SignUp extends JFrame implements ActionListener {
 						JOptionPane.INFORMATION_MESSAGE);
 				return;
 			} else if (Integer.parseInt(emailCKT.getText()) != smtp.getRandomNumber()) {
+				
 				JOptionPane.showConfirmDialog(null, "인증번호가 틀렸습니다.", "인증번호 오류", JOptionPane.DEFAULT_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
 				return;
@@ -270,7 +276,7 @@ public class SignUp extends JFrame implements ActionListener {
 			String email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
 			// 닉네임
 			String nickName = nickNameT.getText();
-
+			
 			dto.setId(id);
 			dto.setPwd(pwd);
 			dto.setTel(tel);
@@ -283,12 +289,15 @@ public class SignUp extends JFrame implements ActionListener {
 					JOptionPane.INFORMATION_MESSAGE);
 			setVisible(false);
 		} else if (e.getSource() == cancelB) { // 가입취소
-
 			setVisible(false);
 		} else if (e.getSource() == clearB) { // 다시작성
 			clear();
 		}
 
 	}
+	
+//	public static void main(String[] args) {
+//		new SignUp().event();
+//	}
 
 }
