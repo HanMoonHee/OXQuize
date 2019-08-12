@@ -487,7 +487,6 @@ public class MemberDAO {
 			pstmt.setString(4, nickname);
 			su = pstmt.executeUpdate();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {
@@ -501,7 +500,6 @@ public class MemberDAO {
 				e.printStackTrace();
 			}
 		}
-
 		return su;
 	}
 
