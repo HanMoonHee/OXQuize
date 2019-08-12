@@ -150,8 +150,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		questionArea.setPreferredSize(d3);
 		questionArea.setBackground(Color.WHITE);
 		Border border = BorderFactory.createLineBorder(Color.GRAY);
-		questionArea
-				.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+		questionArea.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 		Dimension d4 = new Dimension();
 		d4.setSize(140, 140);
 		questionArea.setFont(new Font("Gothic", Font.BOLD, 23));
@@ -411,7 +410,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		// 게임 시작 버튼
 		else if (e.getSource() == startB) { // 게임시작 버튼
 			try {
-				// exitB.setEnabled(false);
+				exitB.setEnabled(false);
 				PlayInfoDTO dto = new PlayInfoDTO(); // 시작하면 타이머도 시작
 				dto.setCommand(PlayInfo.TIMER);
 				oos.writeObject(dto);
@@ -559,8 +558,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 
 									// 사람들이 다 나간상태
 									RoomDTO roomdto = new RoomDTO();
-									if (roomdto.getPlayerCnt() == 0 && roomdto.getPlayer1() == null
-											&& roomdto.getPlayer2() == null) {
+									if (roomdto.getPlayerCnt() == 0 && roomdto.getPlayer1() == null	&& roomdto.getPlayer2() == null) {
 										daoRoom.deleteRoom(room_name);
 									}
 
