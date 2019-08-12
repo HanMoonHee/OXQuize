@@ -70,6 +70,8 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 	private ExecutorService executorService;
 	// 방 이름
 	private String roomName;
+	// 포트번호
+	public int port;
 
 	public WaitingRoom(MemberDTO mydto) {
 		super("게임대기실");
@@ -298,8 +300,8 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 			if (ans == 0) { // 입장 버튼 눌렀을때
 				// 디비에 player2 update
 				roomdao.updateRoom(dto.getNickName(), roomName);
-				
-				new GameWindow(dto.getNickName(), roomName);
+				System.out.println("들어가는 방 포트 :" + index+1);
+				new GameWindow(dto.getNickName(), roomName, index+1);
 				dispose();
 			}
 		} else { // 비밀번호 있는 방
@@ -309,8 +311,8 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 				if (room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 일치
 					// 디비에 player2 update
 					roomdao.updateRoom(dto.getNickName(), roomName);
-
-					new GameWindow(dto.getNickName(), roomName);
+					System.out.println("들어가는 방 포트 :" + index+1);
+					new GameWindow(dto.getNickName(), roomName, index+1);
 					dispose();
 				} else if (!room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 틀림
 					JOptionPane.showMessageDialog(this, "비밀번호가 다릅니다", "오류", JOptionPane.ERROR_MESSAGE);
@@ -425,7 +427,9 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 			}
 			
 			if (roomDialog.getRoom_ok() == 1) { // 방만들어졌을때 게임방 키기
-				new GameWindow(dto.getNickName(), roomName); // 닉네임, 방이름 넘겨주기
+				port = roomdao.getCurrentRoomNum(roomName);
+				System.out.println("만든 방 포트 카운트: " + port);
+				new GameWindow(dto.getNickName(), roomName, port); // 닉네임, 방이름 넘겨주기
 				dispose();
 
 			} else if (roomDialog.getRoom_ok() == 0) { // 방안만들어졌을때
