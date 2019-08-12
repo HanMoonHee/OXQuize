@@ -51,6 +51,7 @@ public class SMTPMailSendPassword {
             
             // 이메일 수신자
             InternetAddress to = new InternetAddress(email);
+            System.out.println(email);
             msg.setRecipient(Message.RecipientType.TO, to);
              
             // 이메일 제목

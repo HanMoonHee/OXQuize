@@ -1,5 +1,6 @@
 package oxq.action.login;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
  
@@ -12,13 +13,18 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import oxq.dao.MemberDAO;
+import oxq.dto.MemberDTO;
+
 
 public class SMTPMailSendManager {
 
 	private int randomNumber; //인증번호 발생
+	private ArrayList<MemberDTO> list;
+	private MemberDAO dao = MemberDAO.getInstance();
 	
 	
-	public SMTPMailSendManager() {
+	public SMTPMailSendManager(String emailAll) {
 		Properties p = System.getProperties();
 		p.put("mail.smtp.starttls.enable", "true"); //gmail은 무조건 true 고정
 		p.put("mail.smtp.host", "smtp.gmail.com"); //smtp 서버 주소
@@ -34,8 +40,18 @@ public class SMTPMailSendManager {
         Session session = Session.getDefaultInstance(p, auth);
         MimeMessage msg = new MimeMessage(session);
 
-        randomNumber = (int)(Math.random()*8999)+1000;
-        System.out.println(randomNumber);
+        
+        
+        list = dao.getMemberList();
+        
+        for(MemberDTO dto : list) {
+			if(dto.getEmail().equals(emailAll)) {
+				randomNumber = (int)(Math.random()*8999)+1000;
+		        System.out.println(randomNumber);
+			}
+		}
+        
+        
         try{
             //편지보낸시간
             msg.setSentDate(new Date());
@@ -50,7 +66,7 @@ public class SMTPMailSendManager {
            
             // 이메일 수신자
            
-            InternetAddress to = new InternetAddress("kimtahun11@naver.com");
+            InternetAddress to = new InternetAddress(emailAll);
             
             msg.setRecipient(Message.RecipientType.TO, to);
              
@@ -81,9 +97,9 @@ public class SMTPMailSendManager {
 		this.randomNumber = randomNumber;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args, String emailAll) {
 		
-		SMTPMailSendManager smtpMailSendManager = new SMTPMailSendManager();
+		SMTPMailSendManager smtpMailSendManager = new SMTPMailSendManager(emailAll);
 
 		
 	}

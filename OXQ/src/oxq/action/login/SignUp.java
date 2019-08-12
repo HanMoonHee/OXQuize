@@ -32,6 +32,7 @@ public class SignUp extends JFrame implements ActionListener {
 	private JComboBox<String> tel1C, emailC;
 	private JButton idB, emailB, emailCKB, addB, cancelB, clearB;
 	private String id, email;
+	private String emailAll;
 	private SMTPMailSendManager smtp;
 
 	// private MemberDTO dto;
@@ -210,16 +211,16 @@ public class SignUp extends JFrame implements ActionListener {
 			}
 		} else if (e.getSource() == emailB) { // 이메일 인증
 			MemberDAO dao = MemberDAO.getInstance();
-			email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
-			System.out.println(email);
+			emailAll = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
+			System.out.println(emailAll);
 			if (emailT.getText().equals("")) {
 				JOptionPane.showConfirmDialog(this, "이메일을 입력하세요.", "입력 오류", JOptionPane.DEFAULT_OPTION,
 						JOptionPane.WARNING_MESSAGE);
-			} else if (email.equals(dao.getEmail(email))) {
+			} else if (emailAll.equals(dao.getEmail(email))) {
 				JOptionPane.showConfirmDialog(this, "이미 존재하는 이메일 입니다.", "사용 불가", JOptionPane.DEFAULT_OPTION,
 						JOptionPane.WARNING_MESSAGE);
-			} else if (!email.equals(dao.getEmail(email))) {
-				smtp = new SMTPMailSendManager();
+			} else if (!emailAll.equals(dao.getEmail(email))) {
+				smtp = new SMTPMailSendManager(emailAll);
 				JOptionPane.showConfirmDialog(this, "인증번호를 발송했습니다.", "인증번호 발송", JOptionPane.DEFAULT_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -289,14 +290,14 @@ public class SignUp extends JFrame implements ActionListener {
 				String tel = tel1C.getSelectedItem().toString() + hyphenL1.getText() + tel2T.getText()
 						+ hyphenL2.getText() + tel3T.getText();
 				// email + emailc 합치기
-				String email = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
+				String emailAll = emailT.getText() + golL.getText() + emailC.getSelectedItem().toString();
 				// 닉네임
 				String nickName = nickNameT.getText();
 
 				dto.setId(id);
 				dto.setPwd(pwd);
 				dto.setTel(tel);
-				dto.setEmail(email);
+				dto.setEmail(emailAll);
 				dto.setNickName(nickName);
 
 				System.out.println(dto.getId() + dto.getPwd() + dto.getNickName() + dto.getTel() + dto.getEmail());
