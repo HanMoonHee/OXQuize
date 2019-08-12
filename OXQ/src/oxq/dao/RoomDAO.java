@@ -24,7 +24,7 @@ public class RoomDAO {
 	} // 싱글톤 처리 끝
 
 	private String driver = "oracle.jdbc.driver.OracleDriver";
-	private String url = "jdbc:oracle:thin:@192.168.0.46:1521:xe"; // 192.168.0.46 팀장님 ip
+	private String url = "jdbc:oracle:thin:@192.168.0.46:1521:xe";	// 192.168.0.46 팀장님 ip 본인 pc 땐 localhost
 	private String user = "java";
 	private String password = "dkdlxl";
 	private Connection conn;
@@ -327,7 +327,68 @@ public class RoomDAO {
 		return list;
 	}
 
-	// 해당 방에 있는 플레이어의 수를 구한다
+	// player1의 이름
+	public String getPlayer1Name(String roomName) {
+		String player1Name = "";
+
+		getConnection();
+		String sql = "select player1 from room where ROOM_NAME = ?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, roomName);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				player1Name = rs.getString("player1");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return player1Name;
+	}
+
+	// player1의 이름
+	public String getPlayer2Name(String roomName) {
+		String player2Name = "";
+
+		getConnection();
+		String sql = "select player2 from room where ROOM_NAME = ?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, roomName);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				player2Name = rs.getString("player2");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return player2Name;
+	}
+
 	public int getPlayerCnt(String roomName) {
 		int playerCnt = 0;
 
@@ -408,13 +469,14 @@ public class RoomDAO {
 //	}
 
 	// 1번 플레이어가 방을 나가면 room 테이블에서 닉네임 삭제
-	public void updatePlayer1(String nickname) {
+	public int updatePlayer1(String nickname) {
+		int su = 0;
 		getConnection();
 		String sql = "update room set player1=null where player1=?";
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, nickname);
-			pstmt.executeUpdate();
+			su = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -429,16 +491,18 @@ public class RoomDAO {
 				e.printStackTrace();
 			}
 		}
+		return su;
 	}
 
 	// 2번 플레이어가 방을 나가면 room 테이블에서 닉네임 삭제
-	public void updatePlayer2(String nickname) {
+	public int updatePlayer2(String nickname) {
+		int su = 0;
 		getConnection();
 		String sql = "update room set player2=null where player2=?";
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, nickname);
-			pstmt.executeUpdate();
+			su = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -453,6 +517,33 @@ public class RoomDAO {
 				e.printStackTrace();
 			}
 		}
+		return su;
+	}
+
+	// 1번 플레이어가 방을 나가면 2번 플레이어를 1번으로 바꿈
+	public int updatePlayer2to1(String room_name) {
+		int su = 0;
+		getConnection();
+		String sql = "update room set player1=player2, player2 = null where room_name = ?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, room_name);
+			su = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return su;
 	}
 
 	public void updatePlayer01Score(String nickname, int correctCnt) {

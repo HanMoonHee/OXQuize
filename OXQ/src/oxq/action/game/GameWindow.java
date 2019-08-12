@@ -37,7 +37,6 @@ import oxq.action.waitingroom.WaitingRoom;
 import oxq.dao.MemberDAO;
 import oxq.dao.RoomDAO;
 import oxq.dto.MemberDTO;
-import oxq.dto.RoomDTO;
 
 public class GameWindow extends JFrame implements Runnable, ActionListener {
 	private static int timer = 5; // 한 문제당 푸는 시간
@@ -128,6 +127,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		// 게임화면 레이아웃
 		// -----------------------------------------------------------------------------------
 		startB = new JButton("Game Start"); // 게임 시작 버튼
+		startB.setEnabled(false);	// 처음에 1명일테니 false로
 		exitB = new JButton("Exit"); // 나가기 버튼
 
 		input = new JTextField(); // 채팅입력 창
@@ -274,7 +274,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 	// ----------------------------------------------------------------------------------
 	public void service() {
 		try {
-			socket = new Socket("192.168.0.46", 1000*port); // "192.168.0.46" 팀장님 ip
+			socket = new Socket("192.168.0.46", 1000*port); // "192.168.0.46" 팀장님 ip   본인 pc로 할땐 localhost로!!
 
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
@@ -394,9 +394,18 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		else if (e.getSource() == exitB) {
 			PlayInfoDTO dto = new PlayInfoDTO();
 			dto.setCommand(PlayInfo.EXIT);
-			daoRoom.updatePlayCnt((playerCnt - 1), room_name);
-			daoRoom.updatePlayer1(nickname);
-			daoRoom.updatePlayer2(nickname);
+			if(daoRoom.updatePlayer1(nickname) == 1) {	// 1번이 나간거
+				daoRoom.updatePlayCnt(1, room_name); // 1번 나갔으니까 1명만 있음
+				daoRoom.updatePlayer2to1(room_name);
+			}
+			else if (daoRoom.updatePlayer2(nickname) == 1) {	// 2번이 나간거
+				daoRoom.updatePlayCnt(1, room_name); // 2번 나갔으니까 1명만 있음
+			}
+			
+			// 플레이카운트 1이고 이름 둘다 null이면 둘다 exit으로 나간거
+			if(daoRoom.getPlayerCnt(room_name) == 1 && daoRoom.getPlayer1Name(room_name) == null && daoRoom.getPlayer2Name(room_name) == null) {
+				daoRoom.deleteRoom(room_name);
+			}
 
 			//System.out.println("지금 플레이어 카운트=" + daoRoom.getPlayerCnt(room_name));
 
@@ -459,31 +468,47 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 					ois.close();
 					es.shutdownNow();
 					socket.close();
-
+					
 					dispose();
+					new WaitingRoom(nowdto).service();
 					break;
 				}
 
 				else if (dto.getCommand() == PlayInfo.SEND) {
 					output.append(dto.getMessage() + "\n");
+					
+					if ((dto.getMessage().indexOf("입장하였습니다") != -1) || (dto.getMessage().indexOf("퇴장하였습니다") != -1)) {
+
+						es.submit(new Runnable() {
+							@Override
+							public void run() {
+								if(daoRoom.getPlayerCnt(room_name) ==2) {
+									startB.setEnabled(true);
+								}
+								
+								nicksss = daoRoom.getNicksss(room_name);
+								
+								if (daoRoom.getPlayerCnt(room_name) == 1) { // 1번 플레이어
+									center3.setVisible(false);
+									center1_icon.add(player01); // 플레이어 아이콘
+									// player02.setIcon(null);
+									// center3_icon.add(player02);
+									nicknameTp1.setText(nicksss.get(0));
+								}
+								
+								else if (daoRoom.getPlayerCnt(room_name) == 2) {
+									center3.setVisible(true);
+									center1_icon.add(player01); // 1번 플레이어
+									center3_icon.add(player02); // 2번 플레이어
+									nicknameTp1.setText(nicksss.get(0));
+									nicknameTp2.setText(nicksss.get(1));
+								}
+							}
+						});
+					}
 					int pos = output.getText().length(); // 스크롤 자동
 					output.setCaretPosition(pos);
 
-					nicksss = daoRoom.getNicksss(room_name);
-
-					if (daoRoom.getPlayerCnt(room_name) == 1) { // 1번 플레이어
-						center1_icon.add(player01); // 플레이어 아이콘
-						// player02.setIcon(null);
-						// center3_icon.add(player02);
-						nicknameTp1.setText(nicksss.get(0));
-					}
-
-					else if (daoRoom.getPlayerCnt(room_name) == 2) {
-						center1_icon.add(player01); // 1번 플레이어
-						center3_icon.add(player02); // 2번 플레이어
-						nicknameTp1.setText(nicksss.get(0));
-						nicknameTp2.setText(nicksss.get(1));
-					}
 
 					try {
 						Thread.sleep(2000);
@@ -557,8 +582,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 									daoRoom.updatePlayer2(nickname);
 
 									// 사람들이 다 나간상태
-									RoomDTO roomdto = new RoomDTO();
-									if (roomdto.getPlayerCnt() == 0 && roomdto.getPlayer1() == null	&& roomdto.getPlayer2() == null) {
+									if(daoRoom.getPlayerCnt(room_name) == 0 && daoRoom.getPlayer1Name(room_name) == null && daoRoom.getPlayer2Name(room_name) == null) {
 										daoRoom.deleteRoom(room_name);
 									}
 

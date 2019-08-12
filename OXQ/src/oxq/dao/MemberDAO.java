@@ -22,7 +22,7 @@ public class MemberDAO {
 	}
 
 	private String driver = "oracle.jdbc.driver.OracleDriver";
-	private String url = "jdbc:oracle:thin:@192.168.0.46:1521:xe";	// 192.168.0.46 팀장님 ip
+	private String url = "jdbc:oracle:thin:@192.168.0.46:1521:xe";	// 192.168.0.46 팀장님 ip 본인 pc 땐 localhost
 	private String user = "java";
 	private String password = "dkdlxl";
 	private Connection conn;
