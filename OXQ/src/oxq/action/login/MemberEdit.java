@@ -27,17 +27,20 @@ public class MemberEdit extends JFrame implements ActionListener {
 	private JTextField idT, nickNameT, tel2T, tel3T, emailT;
 	private JPasswordField pwdT;
 	private JComboBox<String> tel1C, emailC;
-	private JButton updateB, cancelB;
+	private JButton updateB, deleteB, cancelB;
 	private ArrayList<MemberDTO> list;
 	private MemberDTO dto;
 	private String id;
 	private String mail, mail1, mail2, tel0, tel3; // 이메일
 	String[] tel1 = new String[3];
 	private Login login;
+	private String pwd;
 
-	public MemberEdit() {
+	public MemberEdit(MemberDTO mydto) {
 		super("회원정보 수정");
 
+		id = mydto.getId();
+		System.out.println("생성자로 아이디 가져오나 "+id);
 		idL = new JLabel("    아이디  :    ");
 		pwdL = new JLabel("    비밀번호 : ");
 		nickNameL = new JLabel("    닉네임 : ");
@@ -62,6 +65,7 @@ public class MemberEdit extends JFrame implements ActionListener {
 		emailC = new JComboBox<String>(email);
 
 		updateB = new JButton("개인정보 수정");
+		deleteB = new JButton("회원탈퇴");
 		cancelB = new JButton("취소");
 
 		JPanel idP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 아이디
@@ -94,6 +98,7 @@ public class MemberEdit extends JFrame implements ActionListener {
 		JPanel buttonP = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JPanel buttonP2 = new JPanel(new GridLayout(1, 3, 5, 5));
 		buttonP2.add(updateB);
+		buttonP2.add(deleteB);
 		buttonP2.add(cancelB);
 		buttonP.add(buttonP2);
 
@@ -119,7 +124,10 @@ public class MemberEdit extends JFrame implements ActionListener {
 			}
 		});
 		
+		Info(id);
+		
 		updateB.addActionListener(this);
+		deleteB.addActionListener(this);
 		cancelB.addActionListener(this);
 	}
 
@@ -157,7 +165,7 @@ public class MemberEdit extends JFrame implements ActionListener {
 
 			int result = JOptionPane.showConfirmDialog(this, "프로필을 수정하시겠습니까?", "프로필 수정", JOptionPane.OK_CANCEL_OPTION);
 			if (result == JOptionPane.CANCEL_OPTION) {
-				JOptionPane.showConfirmDialog(this, "프로필 변경이 취소되었습니다..", "프로필 변경 취소", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showConfirmDialog(this, "프로필 변경이 취소되었습니다.", "프로필 변경 취소", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
 			} else if (result == JOptionPane.OK_OPTION) {
 				int su = dao.updateMember(dto);
 				JOptionPane.showConfirmDialog(this, "프로필 변경 되었습니다.", "프로필 변경 완료", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
@@ -166,6 +174,27 @@ public class MemberEdit extends JFrame implements ActionListener {
 				return;
 			}
 
+		} else if (e.getSource() == deleteB){//회원탈퇴
+			MemberDAO dao = MemberDAO.getInstance();
+			String pwd = dao.getPwd(id);
+			
+			if(!pwdT.getText().equals(pwd)) {
+				JOptionPane.showConfirmDialog(this, "비밀번호가 일치하지 않습니다.", "프로필 변경 취소", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			} else if (pwdT.getText().equals(pwd)) {
+				int result = JOptionPane.showConfirmDialog(this, "정말 탈퇴하시겠습니까?", "회원탈퇴", JOptionPane.OK_CANCEL_OPTION);
+				if (result == JOptionPane.CANCEL_OPTION) {
+					JOptionPane.showConfirmDialog(this, "회원탈퇴를 취소하였습니다.", "탈퇴 취소", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+				} else if (result == JOptionPane.OK_OPTION) {
+					int su = dao.deleteMember(id);
+					JOptionPane.showConfirmDialog(this, "회원탈퇴 완료.", "탈퇴 완료", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+					
+					System.exit(0);
+					
+				} else {
+					return;
+				}
+			}
+			
 		} else if (e.getSource() == cancelB) {// 창 닫기
 			setVisible(false);
 		}
