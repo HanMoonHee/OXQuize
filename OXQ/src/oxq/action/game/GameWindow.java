@@ -275,7 +275,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 	// ----------------------------------------------------------------------------------
 	public void service() {
 		try {
-			socket = new Socket("localhost", 1000*port); // "localhost" 포트넘버
+			socket = new Socket("192.168.0.46", 1000*port); // "192.168.0.46" 팀장님 ip
 
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
