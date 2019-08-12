@@ -24,6 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -32,9 +33,11 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 
+import oxq.action.waitingroom.WaitingRoom;
 import oxq.dao.MemberDAO;
 import oxq.dao.RoomDAO;
 import oxq.dto.MemberDTO;
+import oxq.dto.RoomDTO;
 
 public class GameWindow extends JFrame implements Runnable, ActionListener {
 
@@ -58,8 +61,8 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 	private ArrayList<String> nicksss; // 해당방에 있는 플레이어들의 닉네임
 
 	// 스레드 풀
-	private ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); // 채팅과 게임을 동시에 돌아가게
-																										
+	private ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
 	// 화면
 	private JButton startB; // 시작버튼
 	private JButton exitB; // 나가기 버튼 (전체 대기실로 돌아가기)
@@ -119,6 +122,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		this.room_name = room_name;
 		this.playerCnt = daoRoom.getPlayerCnt(room_name);
 
+		nowdto = daoMember.loginDTO2(nickname);
 		// 게임화면 레이아웃
 		// -----------------------------------------------------------------------------------
 		startB = new JButton("Game Start"); // 게임 시작 버튼
@@ -264,14 +268,11 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		service();
-
 	}
 
 	// ----------------------------------------------------------------------------------
 	public void service() {
-
 		try {
-
 			socket = new Socket("localhost", 9600); // "localhost" 포트넘버
 
 			oos = new ObjectOutputStream(socket.getOutputStream());
@@ -323,13 +324,15 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		if (listlist.get(round - 1).getAnswer() == 0 && jb[1].isSelected()) { // 정답 X, 선택 X
 			correctCnt++;
 		}
-//	      System.out.println("정답: " + correctCnt + " | " + "오답: " + wrongCnt);
+		if ((!jb[0].isSelected()) && (!jb[1].isSelected())) {
+			wrongCnt++;
+		}
+
 		jb[0].setSelected(false);
 		jb[1].setSelected(false);
 	}
 
 	// ----------------------------------------------------------------------------------
-
 	public void countTime() { // 문제풀이 제한 시간까지 카운트
 		while (true) {
 			timeT.setText(Integer.toString(timer)); // 시간창에 뿌려주기
@@ -447,12 +450,29 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 
 	@Override
 	public void run() {
-		PlayInfoDTO dto = null;
-		try {
-			while (true) {
-				// 서버로부터 받기
-				dto = (PlayInfoDTO) ois.readObject();
+		while (true) {
+			// 서버로부터 받기
+			try {
+				PlayInfoDTO dto = (PlayInfoDTO) ois.readObject();
 				if (dto.getCommand() == null || dto.getCommand() == PlayInfo.EXIT) {
+//					if (nickname.equals(nicksss.get(0))) { // 내가 1p 일 경우
+//						nicksss.remove(0);
+//						daoRoom.updatePlayer1(nickname);
+//					}
+//					if (nickname.equals(nicksss.get(1))) { // 내가 2p 일 경우
+//						nicksss.remove(1);
+//						daoRoom.updatePlayer2(nickname);
+//					}
+//
+//					dto.setCommand(PlayInfo.SEND);
+//
+//					try {
+//						oos.writeObject(dto);
+//						oos.flush();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+
 					oos.close();
 					ois.close();
 					es.shutdownNow();
@@ -467,14 +487,12 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 					int pos = output.getText().length(); // 스크롤 자동
 					output.setCaretPosition(pos);
 
-//	                System.out.println("플레이어카운트:" + dto.getPlayerCnt());
-					System.out.println("플레이어 카운트:" + daoRoom.getPlayerCnt(room_name));
 					nicksss = daoRoom.getNicksss(room_name);
 
 					if (daoRoom.getPlayerCnt(room_name) == 1) { // 1번 플레이어
 						center1_icon.add(player01); // 플레이어 아이콘
-	                  	player02.setIcon(null);
-						center3_icon.add(player02);
+						// player02.setIcon(null);
+						// center3_icon.add(player02);
 						nicknameTp1.setText(nicksss.get(0));
 					}
 
@@ -493,8 +511,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 				}
 
 				else if (dto.getCommand() == PlayInfo.TIMER) { // 스레드풀 게임이 진행되는 동안에도 다른 command들이 들어 갈 수 있게
-					PlayInfoDTO infodto = new PlayInfoDTO();
-					
 					es.submit(new Runnable() {
 						@Override
 						public void run() {
@@ -515,7 +531,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 								questionArea.setText(qqq);
 
 								countTime(); // countTime -> checkAnsw
-								// dto.setCorrect(correctCnt);// 맞은문제수....?
 
 								if (nickname.equals(nicksss.get(0))) { // 내가 1p 일 경우
 									daoRoom.updatePlayer01Score(nickname, correctCnt);
@@ -550,28 +565,44 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 									memberDTO.setWin_cnt(winCnt + memberDTO.getWin_cnt());
 
 									int su = daoMember.updateOXHistory(nickname, memberDTO);
-									System.out.println("update 결과=" + su);
+									// System.out.println("update 결과=" + su);
 
-//									try {
-//										oos.writeObject(infodto);
-//										oos.flush();
-//									} catch (IOException e) {
-//										e.printStackTrace();
-//									}
-									break;
-									//startB.setEnabled(true);
-									//exitB.setEnabled(true);
+									JOptionPane.showMessageDialog(null, "게임이 끝났습니다. 대기방으로 나갑니다.", "게임종료", JOptionPane.DEFAULT_OPTION);
+
+									daoRoom.updatePlayCnt(0, room_name); // 게임 끝난거니까 0으로 바꿈 다나갈거니까
+									daoRoom.updatePlayer1(nickname);
+									daoRoom.updatePlayer2(nickname);
+
+									// 사람들이 다 나간상태
+									RoomDTO roomdto = new RoomDTO();
+									if (roomdto.getPlayerCnt() == 0 && roomdto.getPlayer1() == null
+											&& roomdto.getPlayer2() == null) {
+										daoRoom.deleteRoom(room_name);
+									}
+
+									dto.setCommand(PlayInfo.EXIT);
+
+									new WaitingRoom(nowdto).service();
+
+									try {
+										oos.writeObject(dto);
+										oos.flush();
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
 
 								}
 							}
 						}
 					});
 				}
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+
 	}
+
 }

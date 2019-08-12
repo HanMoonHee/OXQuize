@@ -51,18 +51,42 @@ public class RoomDAO {
 	public int insertRoom(RoomDTO dto, String nickName) {
 		int su = 0;
 		getConnection(); // 접속
-		String sql = "INSERT INTO room(room_no, room_name, room_pwd, room_playercnt, player1) values (?,?,?,?,?)";
+		String sql = "insert into room(room_no, room_name, room_pwd, room_playercnt, player1) values (?,?,?,?,?)";
 
 		try {
 			pstmt = conn.prepareStatement(sql); // 생성
 			pstmt.setInt(1, dto.getRoomNumer());
 			pstmt.setString(2, dto.getRoomName());
 			pstmt.setString(3, dto.getRoomPwd());
-			pstmt.setInt(4, dto.getPlayerCnt());
+			pstmt.setInt(4, 1);
 			pstmt.setString(5, nickName);
 
 			su = pstmt.executeUpdate(); // 실행
 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return su;
+	}
+	
+	// 게임방 삭제
+	public int deleteRoom(String roomName) {
+		int su = 0;
+		getConnection();
+		String sql = "delete from room where room_Name = ?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, roomName);
+			su = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -315,7 +339,6 @@ public class RoomDAO {
 			pstmt.setString(2,roomName);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try { // 종료

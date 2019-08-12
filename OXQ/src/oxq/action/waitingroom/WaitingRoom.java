@@ -205,7 +205,7 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 		ArrayList<MemberDTO> rankArrayList = rankdao.getRankList();
 
 		for (MemberDTO dto : rankArrayList) {
-			rankModel.addElement(dto.getNickName() + " 1등 횟수 : \t" + dto.getWin_cnt());
+			rankModel.addElement(dto.getNickName() + " 이긴 횟수 : \t" + dto.getWin_cnt());
 		}
 
 		// 디비에 저장된 룸 불러와서 roomModel에 저장
@@ -297,10 +297,10 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 					JOptionPane.PLAIN_MESSAGE);
 			if (ans == 0) { // 입장 버튼 눌렀을때
 				// 디비에 player2 update
-				int su = roomdao.updateRoom(dto.getNickName(), roomName);
-				if (su > 0)
-					System.out.println(su + "-- player2 정보 업데이트 ");
+				roomdao.updateRoom(dto.getNickName(), roomName);
+				
 				new GameWindow(dto.getNickName(), roomName);
+				dispose();
 			}
 		} else { // 비밀번호 있는 방
 			String pwd = JOptionPane.showInputDialog(this, "비밀번호를 입력하세요");
@@ -308,10 +308,10 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 			if (pwd != null) {
 				if (room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 일치
 					// 디비에 player2 update
-					int su = roomdao.updateRoom(dto.getNickName(), roomName);
-					if (su > 0)
-						System.out.println(su + "-- player2 정보 업데이트 ");
+					roomdao.updateRoom(dto.getNickName(), roomName);
+
 					new GameWindow(dto.getNickName(), roomName);
+					dispose();
 				} else if (!room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 틀림
 					JOptionPane.showMessageDialog(this, "비밀번호가 다릅니다", "오류", JOptionPane.ERROR_MESSAGE);
 				}
@@ -360,7 +360,7 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 					ArrayList<RoomDTO> roomArrayList = roomdao.getRoomList();
 
 					roomModel.clear();
-
+										
 					for (RoomDTO roomdto : roomArrayList) {
 						roomModel.addElement(roomdto);
 					}
@@ -424,15 +424,20 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 				io.printStackTrace();
 			}
 			
-			if (roomDialog.getRoom_ok() == 1) { // 방만들어졌을때 대기방 닫고 게임방 키기
-				new GameWindow(dto.getNickName(), roomName).service(); // 닉네임, 방이름 넘겨주기
+			if (roomDialog.getRoom_ok() == 1) { // 방만들어졌을때 게임방 키기
+				new GameWindow(dto.getNickName(), roomName); // 닉네임, 방이름 넘겨주기
+				dispose();
+
 			} else if (roomDialog.getRoom_ok() == 0) { // 방안만들어졌을때
 				return;
 			}
 		} 
 		// 회원정보 수정
 		else if (e.getSource() == myInfoB) {
-	         new MemberEdit().Info(id);
+			MemberDAO dao = MemberDAO.getInstance();
+			MemberDTO dto = dao.loginDTO(id);
+			
+	        new MemberEdit(dto);
 	    }
 	}
 	
