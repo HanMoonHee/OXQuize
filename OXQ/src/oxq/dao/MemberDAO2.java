@@ -1,5 +1,6 @@
 package oxq.dao;
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,18 +10,17 @@ import java.util.ArrayList;
 
 import oxq.dto.MemberDTO;
 
-public class MemberDAO {
-	private static MemberDAO instance;
+public class MemberDAO2 {
+	private static MemberDAO2 instance;
 
-	public static MemberDAO getInstance() {
+	public static MemberDAO2 getInstance() {
 		if (instance == null) {
-			synchronized (MemberDAO.class) {
-				instance = new MemberDAO();
+			synchronized (MemberDAO2.class) {
+				instance = new MemberDAO2();
 			}
 		}
 		return instance;
 	}
-
 	private String driver = "oracle.jdbc.driver.OracleDriver";
 	private String url = "jdbc:oracle:thin:@localhost:1521:xe";
 	private String user = "java";
@@ -29,7 +29,7 @@ public class MemberDAO {
 	private PreparedStatement pstmt;
 	private ResultSet rs;
 
-	public MemberDAO() {
+	public MemberDAO2() {
 		try {
 			Class.forName(driver);
 		} catch (ClassNotFoundException e) {
@@ -64,12 +64,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null) conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -81,7 +78,10 @@ public class MemberDAO {
 	public int updateMember(MemberDTO dto) {
 		int su = 0;
 		getConnection();
-		String sql = "update member set pwd = ?," + "nickname = ?," + "tel = ?," + "email = ? where id = ?";
+		String sql = "update member set pwd = ?," +
+		"nickname = ?," +
+				"tel = ?," +
+		"email = ? where id = ?";
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, dto.getPwd());
@@ -95,10 +95,8 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -120,10 +118,8 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -150,12 +146,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -180,12 +173,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -221,12 +211,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try { // 종료
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -261,12 +248,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -299,12 +283,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -313,7 +294,7 @@ public class MemberDAO {
 	}
 
 	// 로그인 하면 login 상태 1로 update
-	public int loginFlag(String id) {
+	public int LoginFlag(String id) {
 		int su = 0;
 		getConnection();
 		String sql = "update member set login = ? where id = ?";
@@ -328,12 +309,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -342,7 +320,7 @@ public class MemberDAO {
 	}
 
 	// 로그아웃 하면 login 상태 0로 update
-	public int logoutFlag(String id) {
+	public int LogoutFlag(String id) {
 		int su = 0;
 		getConnection();
 		String sql = "update member set login = ? where id = ?";
@@ -357,12 +335,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -389,12 +364,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null) conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -422,12 +394,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -450,12 +419,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -465,65 +431,32 @@ public class MemberDAO {
 
 	// 아이디 찾기
 	public String getId(String id) { // 아이디 찾기
-		String searchedID = "";
-		String sql = "select id from member where id = ?";
-		getConnection();
+	      //ArrayList<MemberDTO> arrayList = new ArrayList<MemberDTO>();
+	      String searchedID = "";
+	      String sql = "select id from member where id = ?";
+	      getConnection();
+	      
+	      try {
+	         pstmt = conn.prepareStatement(sql);
+	         pstmt.setString(1, id);
+	         rs = pstmt.executeQuery();
 
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, id);
-			rs = pstmt.executeQuery();
-
-			if (rs.next()) {
-				searchedID = rs.getString(1);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return searchedID;
-	}
-
-	// 이메일 가져오기
-	public String getEmail(String email) {
-		String searchedEamil = "";
-		String sql = "select email from member where email = ?";
-		getConnection();
-
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, email);
-			rs = pstmt.executeQuery();
-
-			if (rs.next()) {
-				searchedEamil = rs.getString(1);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return searchedEamil;
-	}
+	         if (rs.next()) {
+	            searchedID = rs.getString(1);
+	         } 
+	      } catch (SQLException e) {
+	         e.printStackTrace();
+	      } finally {
+	         try {
+	            if (rs != null) rs.close();
+	            if (pstmt != null) pstmt.close();
+	            if (conn != null) conn.close();
+	         } catch (SQLException e) {
+	            e.printStackTrace();
+	         }
+	      }
+	      return searchedID;
+	   }
 
 	// 아이디의 정보값 가져오기
 	public MemberDTO getIdLIst(MemberDTO dto) {
@@ -550,19 +483,44 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null)	rs.close();
+				if (pstmt != null)	pstmt.close();
+				if (conn != null)	conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
 		return dto;
 	}
+	
+	//이메일 가져오기
+	public String getEmail(String email) { 
+	      String searchedEamil = "";
+	      String sql = "select id from member where email = ?";
+	      getConnection();
+	      
+	      try {
+	         pstmt = conn.prepareStatement(sql);
+	         pstmt.setString(1, email);
+	         rs = pstmt.executeQuery();
 
+	         if (rs.next()) {
+	            searchedEamil = rs.getString(1);
+	         } 
+	      } catch (SQLException e) {
+	         e.printStackTrace();
+	      } finally {
+	         try {
+	            if (rs != null) rs.close();
+	            if (pstmt != null) pstmt.close();
+	            if (conn != null) conn.close();
+	         } catch (SQLException e) {
+	            e.printStackTrace();
+	         }
+	      }
+	      return searchedEamil;
+	   }
+	
 	// 로그인 상태 가지고 오기
 //	public MemberDTO getMemberDTO(String id){
 //	       
