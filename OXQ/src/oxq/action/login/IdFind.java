@@ -79,21 +79,23 @@ public class IdFind extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		String id = null;
+		MemberDAO dao = MemberDAO.getInstance();
 		email = emailT.getText();
-		list = dao.getMemberList();
+		
 		if (email.length() <= 0) {
+			model.clear();
 			model.addElement("아이디를 입력해주세요");
 		} else {
-			model.clear();
-			for (MemberDTO dto : list) {
-				if (email.equals(dto.getEmail())) {
-					model.addElement(dto.getId());
-				}
+			id = dao.getEmailId(email);
+			if(!email.equals(dao.getEmail(email))) {
+				model.clear();
+				model.addElement("찾는 아이디가 없습니다.");
 			}
-//			for (MemberDTO dto : list) {
-
-//			}
+			else if (email.equals(dao.getEmail(email))) {
+				model.clear();
+				model.addElement(id);
+			}
 		}
-
 	}
 }
