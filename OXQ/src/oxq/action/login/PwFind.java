@@ -92,9 +92,9 @@ public class PwFind extends JFrame implements ActionListener, KeyListener {
 		email = emailT.getText();
 		
 		if (id.length() <= 0) {
-			JOptionPane.showMessageDialog(this, "아이디를 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "아이디를 입력하세요", "아이디값 없음", JOptionPane.ERROR_MESSAGE);
 		} else if (id.length() > 0 && email.length() <= 0) {
-			JOptionPane.showMessageDialog(this, "이메일을 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "이메일을 입력하세요", "이메일값 없음", JOptionPane.ERROR_MESSAGE);
 		}else if (idT.getText().equals(dao.getId(id)) != emailT.getText().equals(dao.getEmail(email))) {
 			JOptionPane.showMessageDialog(this, "아이디와 이메일을 확인해 주세요", "아이디 이메일 불일치", JOptionPane.ERROR_MESSAGE);
 		} else if (idT.getText().equals(dao.getId(id)) && emailT.getText().equals(dao.getEmail(email))) {
