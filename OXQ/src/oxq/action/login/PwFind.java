@@ -86,20 +86,20 @@ public class PwFind extends JFrame implements ActionListener, KeyListener {
 		 * 1. 아이디와 이메일값을 입력받는다. 2. 찾기버튼을 누른다. 3. dao에서 입력한 아이디와 이메일로 디비 검사 후 맞는것을
 		 * getter하여 list변수에 넣는다. 4. 4. 입력한 이메일에 비밀번호를 보낸다.
 		 */
+		MemberDAO dao = MemberDAO.getInstance();
+		
 		id = idT.getText();
-
 		email = emailT.getText();
-		list = dao.getMemberList();
-
+		
 		if (id.length() <= 0) {
 			JOptionPane.showMessageDialog(this, "아이디를 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
 		} else if (id.length() > 0 && email.length() <= 0) {
 			JOptionPane.showMessageDialog(this, "이메일을 입력하세요", "Error", JOptionPane.ERROR_MESSAGE);
-		} else if (!id.equals(dao.getId(id)) || !email.equals(dao.getEmail(email))) {
+		}else if (idT.getText().equals(dao.getId(id)) != emailT.getText().equals(dao.getEmail(email))) {
 			JOptionPane.showMessageDialog(this, "아이디와 이메일을 확인해 주세요", "아이디 이메일 불일치", JOptionPane.ERROR_MESSAGE);
-		} else {
+		} else if (idT.getText().equals(dao.getId(id)) && emailT.getText().equals(dao.getEmail(email))) {
 			new SMTPMailSendPassword(id, email);
-			JOptionPane.showMessageDialog(this, "비밀번호를 발송하였습니다.", "Send", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, "비밀번호를 발송했습니다.", "비밀번호 발송", JOptionPane.ERROR_MESSAGE);
 		}
 
 

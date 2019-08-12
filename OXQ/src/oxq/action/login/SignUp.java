@@ -30,7 +30,7 @@ public class SignUp extends JFrame implements ActionListener {
 	private JTextField idT, nickNameT, tel2T, tel3T, emailT, emailCKT;
 	private JPasswordField pwdT, pwdCheckT;
 	private JComboBox<String> tel1C, emailC;
-	private JButton idB, emailB, addB, cancelB, clearB;
+	private JButton idB, emailB, emailCKB, addB, cancelB, clearB;
 	private String id, email;
 	private SMTPMailSendManager smtp;
 	
@@ -73,6 +73,7 @@ public class SignUp extends JFrame implements ActionListener {
 
 		idB = new JButton("중복확인");
 		emailB = new JButton("이메일인증");
+		emailCKB = new JButton("인증번호 확인");
 		addB = new JButton("회원가입");
 		cancelB = new JButton("가입취소");
 		clearB = new JButton("초기화");
@@ -118,6 +119,7 @@ public class SignUp extends JFrame implements ActionListener {
 		JPanel emailCKP = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 이메일 인증번호 확인
 		emailCKP.add(emailCKL);
 		emailCKP.add(emailCKT);
+		emailCKP.add(emailCKB);
 
 		JPanel buttonP = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JPanel buttonP2 = new JPanel(new GridLayout(1, 3, 5, 5));
@@ -154,6 +156,7 @@ public class SignUp extends JFrame implements ActionListener {
 	public void event() {
 		idB.addActionListener(this);
 		emailB.addActionListener(this);
+		emailCKB.addActionListener(this);
 		addB.addActionListener(this);
 		cancelB.addActionListener(this);
 		clearB.addActionListener(this);
@@ -262,6 +265,10 @@ public class SignUp extends JFrame implements ActionListener {
 				JOptionPane.showConfirmDialog(null, "인증번호가 틀렸습니다.", "인증번호 오류", JOptionPane.DEFAULT_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
 				return;
+			} else if (e.getSource() == emailCKB) {
+				if(!emailCKT.getText().equals(smtp)) {
+					
+				} else if(emailCKT.getText().equals(smtp));
 			}
 
 			MemberDTO dto = new MemberDTO();
@@ -296,8 +303,8 @@ public class SignUp extends JFrame implements ActionListener {
 
 	}
 	
-//	public static void main(String[] args) {
-//		new SignUp().event();
-//	}
+	public static void main(String[] args) {
+		new SignUp().event();
+	}
 
 }

@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -60,9 +61,10 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 
 		// 로그인패널
 		JPanel pn1 = new JPanel();
-		idL = new JLabel("ID : ");
+		idL = new JLabel("              ID : ");
 		idT = new JTextField(15);
 		pn1.add(idL);
+		idL.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 21));
 		pn1.add(idT);
 		pn1.setBounds(0, 400, 800, 50);
 		pn1.setBackground(new Color(0, 255, 0, 0)); //투명도설정
@@ -72,6 +74,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 		pwdT = new JPasswordField(15);
 		pn2.add(pwdL);
 		pn2.add(pwdT);
+		pwdL.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
 		pn2.setBounds(0, 440, 800, 50);
 		pn2.setBackground(new Color(0, 255, 0, 0)); //투명도설정
 
