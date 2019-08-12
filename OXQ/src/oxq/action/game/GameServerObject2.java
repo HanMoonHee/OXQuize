@@ -5,14 +5,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class GameServerObject {
+public class GameServerObject2 {
 	private ServerSocket ss; 
 	public ArrayList<GameHandlerObject> list;
 
-	public GameServerObject() {
+	public GameServerObject2() {
 		try {
-			ss = new ServerSocket(1000);
-			System.out.println("1번 게임방 서버 준비 완료");
+			ss = new ServerSocket(2000);
+			System.out.println("2번 게임방 서버 준비 완료");
 
 			list = new ArrayList<GameHandlerObject>();
 
@@ -28,6 +28,6 @@ public class GameServerObject {
 		}
 	}
 	public static void main(String[] args) {
-		new GameServerObject();
+		new GameServerObject2();
 	}
 }

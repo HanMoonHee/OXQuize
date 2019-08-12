@@ -40,7 +40,6 @@ import oxq.dto.MemberDTO;
 import oxq.dto.RoomDTO;
 
 public class GameWindow extends JFrame implements Runnable, ActionListener {
-
 	private static int timer = 5; // 한 문제당 푸는 시간
 
 	private String nickname; // 플레이어 닉네임
@@ -116,10 +115,13 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 
 	// 지금 방에 입장한 nickname 가지고 dto 저장
 	private MemberDTO nowdto;
+	// 포트 번호
+	public int port;
 
-	public GameWindow(String nickname, String room_name) { // 생성자
+	public GameWindow(String nickname, String room_name, int port) { // 생성자
 		this.nickname = nickname;
 		this.room_name = room_name;
+		this.port = port;
 		this.playerCnt = daoRoom.getPlayerCnt(room_name);
 
 		nowdto = daoMember.loginDTO2(nickname);
@@ -273,7 +275,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 	// ----------------------------------------------------------------------------------
 	public void service() {
 		try {
-			socket = new Socket("localhost", 9600); // "localhost" 포트넘버
+			socket = new Socket("localhost", 1000*port); // "localhost" 포트넘버
 
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
@@ -397,7 +399,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 			daoRoom.updatePlayer1(nickname);
 			daoRoom.updatePlayer2(nickname);
 
-			System.out.println("지금 플레이어 카운트=" + daoRoom.getPlayerCnt(room_name));
+			//System.out.println("지금 플레이어 카운트=" + daoRoom.getPlayerCnt(room_name));
 
 			try {
 				oos.writeObject(dto);
@@ -455,24 +457,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 			try {
 				PlayInfoDTO dto = (PlayInfoDTO) ois.readObject();
 				if (dto.getCommand() == null || dto.getCommand() == PlayInfo.EXIT) {
-//					if (nickname.equals(nicksss.get(0))) { // 내가 1p 일 경우
-//						nicksss.remove(0);
-//						daoRoom.updatePlayer1(nickname);
-//					}
-//					if (nickname.equals(nicksss.get(1))) { // 내가 2p 일 경우
-//						nicksss.remove(1);
-//						daoRoom.updatePlayer2(nickname);
-//					}
-//
-//					dto.setCommand(PlayInfo.SEND);
-//
-//					try {
-//						oos.writeObject(dto);
-//						oos.flush();
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-
 					oos.close();
 					ois.close();
 					es.shutdownNow();
@@ -483,7 +467,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 				}
 
 				else if (dto.getCommand() == PlayInfo.SEND) {
-					output.append("<" + dto.getCommand().toString() + "> " + dto.getMessage() + "\n");
+					output.append(dto.getMessage() + "\n");
 					int pos = output.getText().length(); // 스크롤 자동
 					output.setCaretPosition(pos);
 
@@ -581,7 +565,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 									}
 
 									dto.setCommand(PlayInfo.EXIT);
-
 									new WaitingRoom(nowdto).service();
 
 									try {
@@ -590,7 +573,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 									} catch (IOException e) {
 										e.printStackTrace();
 									}
-
 								}
 							}
 						}
@@ -602,7 +584,5 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 				e.printStackTrace();
 			}
 		}
-
 	}
-
 }

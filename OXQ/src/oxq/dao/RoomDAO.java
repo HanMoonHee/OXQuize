@@ -77,7 +77,7 @@ public class RoomDAO {
 		}
 		return su;
 	}
-	
+
 	// 게임방 삭제
 	public int deleteRoom(String roomName) {
 		int su = 0;
@@ -158,6 +158,35 @@ public class RoomDAO {
 			}
 		}
 		return seq;
+	}
+
+	// 게임방 번호 가져오기
+	public int getCurrentRoomNum(String roomName) {
+		int no = 0;
+		getConnection();
+		String sql = "select room_no from room where room_name = ?";
+		try {
+			pstmt = conn.prepareStatement(sql); // 생성
+			pstmt.setString(1, roomName);
+			rs = pstmt.executeQuery(); // 실행
+
+			if (rs.next())
+				no = rs.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return no;
 	}
 
 	// 디비에 저장된 룸 리스트
@@ -266,9 +295,9 @@ public class RoomDAO {
 		}
 		return arrayList;
 	}
-	
+
 	// 해당 방에 있는 플레이어의 닉네임을 디비에서 불러와서 리스트에 담는다
-	public ArrayList<String> getNicksss(String room_name) { 
+	public ArrayList<String> getNicksss(String room_name) {
 		ArrayList<String> list = new ArrayList<String>();
 		getConnection();
 		String sql = "select player1,player2 from room where room_name = ?"; // room_name으로
@@ -299,7 +328,7 @@ public class RoomDAO {
 	}
 
 	// 해당 방에 있는 플레이어의 수를 구한다
-	public int getPlayerCnt(String roomName) { 
+	public int getPlayerCnt(String roomName) {
 		int playerCnt = 0;
 
 		getConnection();
@@ -308,7 +337,7 @@ public class RoomDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, roomName);
 			rs = pstmt.executeQuery();
-			
+
 			while (rs.next()) {
 				playerCnt = rs.getInt("ROOM_PLAYERCNT");
 			}
@@ -328,29 +357,32 @@ public class RoomDAO {
 		}
 		return playerCnt;
 	}
-	
+
 	// 플레이어가 게임방에 들어가면/나가면 그 게임방의 플에이어 수를 바꾼다
-	public void updatePlayCnt(int playerCnt, String roomName) { 
+	public void updatePlayCnt(int playerCnt, String roomName) {
 		String sql = "update room set ROOM_PLAYERCNT=? where ROOM_NAME=?";
 		getConnection();
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, playerCnt);
-			pstmt.setString(2,roomName);
+			pstmt.setString(2, roomName);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			try { // 종료
-				if (rs != null)	rs.close();
-				if (pstmt != null) pstmt.close();
-				if (conn != null) conn.close();
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
+
 //	public void updatePlayCnt(PlayInfoDTO dto, String roomName) { // 플레이어가 게임방에 들어가면/나가면 그 게임방의 플에이어 수를 바꾼다
 //		String sql = "update room set ROOM_PLAYERCNT=? where ROOM_NAME=?";
 //		getConnection();
@@ -374,9 +406,9 @@ public class RoomDAO {
 //			}
 //		}
 //	}
-	
+
 	// 1번 플레이어가 방을 나가면 room 테이블에서 닉네임 삭제
-	public void updatePlayer1(String nickname) { 
+	public void updatePlayer1(String nickname) {
 		getConnection();
 		String sql = "update room set player1=null where player1=?";
 		try {
@@ -400,7 +432,7 @@ public class RoomDAO {
 	}
 
 	// 2번 플레이어가 방을 나가면 room 테이블에서 닉네임 삭제
-	public void updatePlayer2(String nickname) { 
+	public void updatePlayer2(String nickname) {
 		getConnection();
 		String sql = "update room set player2=null where player2=?";
 		try {
@@ -594,4 +626,3 @@ public class RoomDAO {
 		return dto;
 	}
 }
-
