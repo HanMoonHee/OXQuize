@@ -54,7 +54,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 		JLayeredPane layeredPane = new JLayeredPane();
 		layeredPane.setBounds(0, 0, 800, 600);
 		layeredPane.setLayout(null);
-		
+
 		// 이미지패널
 		myPanel panel = new myPanel();
 		panel.setBounds(100, 20, 600, 423);
@@ -67,7 +67,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 		idL.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 21));
 		pn1.add(idT);
 		pn1.setBounds(0, 400, 800, 50);
-		pn1.setBackground(new Color(0, 255, 0, 0)); //투명도설정
+		pn1.setBackground(new Color(0, 255, 0, 0)); // 투명도설정
 
 		JPanel pn2 = new JPanel();
 		pwdL = new JLabel("PASSWORD : ");
@@ -76,7 +76,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 		pn2.add(pwdT);
 		pwdL.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
 		pn2.setBounds(0, 440, 800, 50);
-		pn2.setBackground(new Color(0, 255, 0, 0)); //투명도설정
+		pn2.setBackground(new Color(0, 255, 0, 0)); // 투명도설정
 
 		JPanel pn3 = new JPanel();
 		signIN = new JButton("로그인");
@@ -88,7 +88,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 		pn3.add(idFindB);
 		pn3.add(pwFindB);
 		pn3.setBounds(0, 480, 800, 50);
-		pn3.setBackground(new Color(0, 255, 0, 0)); //투명도설정
+		pn3.setBackground(new Color(0, 255, 0, 0)); // 투명도설정
 
 		// 마지막추가
 		layeredPane.add(panel, new Integer(0));
@@ -98,7 +98,7 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 
 		Container contentPane = this.getContentPane();
 		contentPane.add("Center", layeredPane);
-		contentPane.setBackground(new Color(255, 219, 200)); //투명도설정
+		contentPane.setBackground(new Color(255, 219, 200)); // 투명도설정
 
 		setBounds(480, 150, 800, 600);
 		setResizable(false);
@@ -136,14 +136,14 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 		if (e.getSource() == signIN) {
 			id = idT.getText();
 			pwd = pwdT.getText();
-			//System.out.println(id + ": " + pwd);
+
 			if (idT.getText() == null || idT.getText() == "") { // 아이디 입력 안했을때
-				JOptionPane.showMessageDialog(this, "아이디를 입력해주세요", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this, "아이디를 입력해주세요", "아이디 에러", JOptionPane.ERROR_MESSAGE);
 			} else if (pwdT.getText() == null || pwdT.getText() == "") { // 비번 입력 안했을때
-				JOptionPane.showMessageDialog(this, "비밀번호를 입력해주세요", "private", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this, "비밀번호를 입력해주세요", "비밀번호 에러", JOptionPane.ERROR_MESSAGE);
 			} else { // 아이디 비번 입력 되어있을때
 				if (dao.flag(id) == 1) {
-					JOptionPane.showMessageDialog(this, "이미 로그인 중입니다!!", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(this, "이미 로그인 중입니다!!", "로그인 에러", JOptionPane.ERROR_MESSAGE);
 				} else if (dao.flag(id) == 0) {
 					int flag = dao.login(id, pwd);
 					if (flag == 1) { // 로그인 성공
@@ -155,27 +155,38 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 						setVisible(false);
 
 					} else if (flag == 0) { // 비밀번호 틀림
-						JOptionPane.showMessageDialog(this, "비밀번호가 틀렸습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(this, "비밀번호가 틀렸습니다", "로그인 에러", JOptionPane.ERROR_MESSAGE);
 					} else if (flag == -1) { // 아이디 없음
-						JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다", "로그인 에러", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다", "로그인 에러", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}
 		}
 		// 회원가입
-		else if (e.getSource() == signUP) {new SignUp().event();} 
+		else if (e.getSource() == signUP) {
+			new SignUp().event();
+		}
 		// 아이디 찾기
-		else if (e.getSource() == idFindB) {new IdFind();} 
+		else if (e.getSource() == idFindB) {
+			new IdFind();
+		}
 		// 비밀번호 찾기
-		else if (e.getSource() == pwFindB) {new PwFind();}
+		else if (e.getSource() == pwFindB) {
+			new PwFind();
+		}
 	}
-	
+
 	@Override
-	public void keyPressed(KeyEvent e) {}
+	public void keyPressed(KeyEvent e) {
+	}
+
 	@Override
-	public void keyReleased(KeyEvent e) {}
+	public void keyReleased(KeyEvent e) {
+	}
+
 	@Override
-	public void keyTyped(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) {
+	}
 
 	public static void main(String[] args) {
 		new Login().event();

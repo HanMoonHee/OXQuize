@@ -273,46 +273,46 @@ public class MemberDAO {
 		}
 		return dto;
 	}
-	
+
 	// 로그인한 회원의 정보 객체
-		public MemberDTO loginDTO2(String nickName) {
-			MemberDTO dto = new MemberDTO();
-			getConnection();
-			String sql = "select * from member where nickname = ?";
+	public MemberDTO loginDTO2(String nickName) {
+		MemberDTO dto = new MemberDTO();
+		getConnection();
+		String sql = "select * from member where nickname = ?";
 
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, nickName);
+
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				dto.setId(rs.getString("id"));
+				dto.setPwd(rs.getString("pwd"));
+				dto.setNickName(rs.getString("nickName"));
+				dto.setEmail(rs.getString("email"));
+				dto.setTel(rs.getString("tel"));
+				dto.setLogin(rs.getInt("login"));
+				dto.setO_cnt(rs.getInt("o_cnt"));
+				dto.setX_cnt(rs.getInt("x_cnt"));
+				dto.setWin_cnt(rs.getInt("win_cnt"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
 			try {
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setString(1, nickName);
-
-				rs = pstmt.executeQuery();
-
-				if (rs.next()) {
-					dto.setId(rs.getString("id"));
-					dto.setPwd(rs.getString("pwd"));
-					dto.setNickName(rs.getString("nickName"));
-					dto.setEmail(rs.getString("email"));
-					dto.setTel(rs.getString("tel"));
-					dto.setLogin(rs.getInt("login"));
-					dto.setO_cnt(rs.getInt("o_cnt"));
-					dto.setX_cnt(rs.getInt("x_cnt"));
-					dto.setWin_cnt(rs.getInt("win_cnt"));
-				}
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
-			} finally {
-				try {
-					if (rs != null)
-						rs.close();
-					if (pstmt != null)
-						pstmt.close();
-					if (conn != null)
-						conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
 			}
-			return dto;
 		}
+		return dto;
+	}
 
 	// 로그인 체크 성공 1, 비밀번호 틀림 0, 아이디 없음 -1
 	public int login(String id, String pwd) {
@@ -476,31 +476,34 @@ public class MemberDAO {
 	}
 
 	public int updateOXHistory(String nickname, MemberDTO dto) {
-	      int su = 0;
-	      getConnection(); // 연결
-	      String sql = "update member set o_cnt = ?, x_cnt = ?, win_cnt = ? where nickname = ?";
-	      try {
-	         pstmt = conn.prepareStatement(sql);
-	         pstmt.setInt(1,dto.getO_cnt());
-	         pstmt.setInt(2,dto.getX_cnt());
-	         pstmt.setInt(3, dto.getWin_cnt());
-	         pstmt.setString(4, nickname);
-	         su = pstmt.executeUpdate();
-	      } catch (SQLException e) {
-	         // TODO Auto-generated catch block
-	         e.printStackTrace();
-	      } finally {
-	         try {
-	            if(rs != null) rs.close();
-	            if(pstmt != null) pstmt.close();
-	            if(conn != null) conn.close();
-	         } catch (SQLException e) {
-	            e.printStackTrace();
-	         }
-	      }      
-	      
-	      return su;
-	   }
+		int su = 0;
+		getConnection(); // 연결
+		String sql = "update member set o_cnt = ?, x_cnt = ?, win_cnt = ? where nickname = ?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, dto.getO_cnt());
+			pstmt.setInt(2, dto.getX_cnt());
+			pstmt.setInt(3, dto.getWin_cnt());
+			pstmt.setString(4, nickname);
+			su = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return su;
+	}
 
 	// 아이디 찾기
 	public String getId(String id) { // 아이디 찾기
@@ -562,6 +565,37 @@ public class MemberDAO {
 			}
 		}
 		return searchedEamil;
+	}
+
+	// 이메일로 아이디값 가져오기
+	public String getEmailId(String email) {
+		String id = "";
+		String sql = "select id from member where email = ?";
+		getConnection();
+
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, email);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				id = rs.getString("ID");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return id;
 	}
 
 	// 아이디의 정보값 가져오기
