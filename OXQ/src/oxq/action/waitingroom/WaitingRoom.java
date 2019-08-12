@@ -324,9 +324,19 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 					if (room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 일치
 						// 디비에 player2 update
 						roomdao.updateRoom(dto.getNickName(), roomName);
-						System.out.println("들어가는 방 포트 :" + index + 1);
-						new GameWindow(dto.getNickName(), roomName, index + 1);
+						if (roomNo % 4 == 1)
+							roomNo = 1;
+						else if (roomNo % 4 == 2)
+							roomNo = 2;
+						else if (roomNo % 4 == 3)
+							roomNo = 3;
+						else if (roomNo % 4 == 0)
+							roomNo = 4;
+
+						System.out.println("들어가는 방 포트 :" + roomNo);
+						new GameWindow(dto.getNickName(), roomName, roomNo);
 						dispose();
+						
 					} else if (!room.get(index).getRoomPwd().equals(pwd)) { // 비밀번호 틀림
 						JOptionPane.showMessageDialog(this, "비밀번호가 다릅니다", "오류", JOptionPane.ERROR_MESSAGE);
 					}
