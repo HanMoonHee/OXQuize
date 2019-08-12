@@ -410,7 +410,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		// 게임 시작 버튼
 		else if (e.getSource() == startB) { // 게임시작 버튼
 			try {
-				exitB.setEnabled(false);
 				PlayInfoDTO dto = new PlayInfoDTO(); // 시작하면 타이머도 시작
 				dto.setCommand(PlayInfo.TIMER);
 				oos.writeObject(dto);
@@ -506,6 +505,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 
 								System.out.println("라운드=" + round);
 								startB.setEnabled(false);
+								exitB.setEnabled(false);
 
 								jb[0].setEnabled(true);
 								jb[1].setEnabled(true);
