@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import oxq.dao.QuestionsDAO;
+
 public class GameHandlerObject extends Thread {
 	private Socket socket;
 	private ArrayList<GameHandlerObject> list;

@@ -1,4 +1,4 @@
-package oxq.action.game;
+package oxq.dto;
 
 public class QuestionsDTO {
 	private int qNum; // 문제번호 1,2,3...

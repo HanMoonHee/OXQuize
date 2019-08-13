@@ -1,4 +1,4 @@
-package oxq.action.game;
+package oxq.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import oxq.dto.QuestionsDTO;
 
 public class QuestionsDAO {
 	private static QuestionsDAO instance; // SingleTon

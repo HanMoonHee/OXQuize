@@ -35,8 +35,10 @@ import javax.swing.border.Border;
 
 import oxq.action.waitingroom.WaitingRoom;
 import oxq.dao.MemberDAO;
+import oxq.dao.QuestionsDAO;
 import oxq.dao.RoomDAO;
 import oxq.dto.MemberDTO;
+import oxq.dto.QuestionsDTO;
 
 public class GameWindow extends JFrame implements Runnable, ActionListener {
 	private static int timer = 5; // 한 문제당 푸는 시간
@@ -280,7 +282,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 	public void service() {
 		try {
 			socket = new Socket("192.168.0.46", 1000*port); // "192.168.0.46" 팀장님 ip   본인 pc로 할땐 localhost로!!
-//			socket = new Socket("localhost", 1000*port); // "192.168.0.46" 팀장님 ip   본인 pc로 할땐 localhost로!!
 
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
@@ -413,8 +414,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 				daoRoom.deleteRoom(room_name);
 			}
 
-			//System.out.println("지금 플레이어 카운트=" + daoRoom.getPlayerCnt(room_name));
-
 			try {
 				oos.writeObject(dto);
 				oos.flush();
@@ -489,9 +488,7 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 					ois.close();
 					es.shutdownNow();
 					socket.close();
-					
 					dispose();
-					new WaitingRoom(nowdto).service();
 					break;
 				}
 
@@ -512,8 +509,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 								if (daoRoom.getPlayerCnt(room_name) == 1) { // 1번 플레이어
 									center3.setVisible(false);
 									center1_icon.add(player01); // 플레이어 아이콘
-									// player02.setIcon(null);
-									// center3_icon.add(player02);
 									nicknameTp1.setText(nicksss.get(0));
 								}
 								
@@ -594,7 +589,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 									memberDTO.setWin_cnt(winCnt + memberDTO.getWin_cnt());
 
 									int su = daoMember.updateOXHistory(nickname, memberDTO);
-									// System.out.println("update 결과=" + su);
 
 									JOptionPane.showMessageDialog(null, "게임이 끝났습니다. 대기방으로 나갑니다.", "게임종료", JOptionPane.DEFAULT_OPTION);
 
@@ -606,9 +600,8 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 									if(daoRoom.getPlayerCnt(room_name) == 0 && daoRoom.getPlayer1Name(room_name) == null && daoRoom.getPlayer2Name(room_name) == null) {
 										daoRoom.deleteRoom(room_name);
 									}
-
+									
 									dto.setCommand(PlayInfo.EXIT);
-									new WaitingRoom(nowdto).service();
 
 									try {
 										oos.writeObject(dto);
@@ -627,5 +620,6 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 				e.printStackTrace();
 			}
 		}
+		new WaitingRoom(nowdto).service();
 	}
 }
