@@ -1,0 +1,50 @@
+1. 테이블
+--MEMBER 테이블
+CREATE TABLE MEMBER (
+    ID       VARCHAR2(50) PRIMARY KEY,   -- 사용자 아이디(기본키)
+    PWD      VARCHAR2(50),               -- 사용자 비밀번호
+    NICKNAME VARCHAR2(20),               -- 사용자 닉네임
+    TEL      VARCHAR2(20),               -- 사용자 전화번호
+    EMAIL    VARCHAR2(30),               -- 사용자 이메일
+    LOGIN    NUMBER(2) DEFAULT 0,        -- 로그인 여부(로그인 1, 로그아웃 0)       
+    O_CNT    NUMBER(30) DEFAULT 0,       -- 맞춘개수                              
+    X_CNT    NUMBER(30) DEFAULT 0,       -- 틀린개수
+    WIN_CNT  NUMBER(30) DEFAULT 0
+);
+-- MEMBER 시퀀스
+create sequence seq_member nocycle nocache;
+
+
+--ROOM 테이블
+CREATE TABLE ROOM (
+    ROOM_NO     NUMBER(10) PRIMARY KEY,         -- 게임방 번호
+    ROOM_NAME   VARCHAR2(50),                   -- 게임방 이름
+    ROOM_PWD    VARCHAR2(50),                   -- 게임방 비밀번호
+    ROOM_PLAYERCNT NUMBER(5) DEFAULT 0,                    -- 방에 들어간 사람수
+    PLAYER1     VARCHAR2(20) DEFAULT NULL,      -- 1P 닉네임
+    PLAYER2     VARCHAR2(20) DEFAULT NULL,       -- 2P 닉네임
+    PLAYER1_SCORE NUMBER(10) DEFAULT 0,
+    PLAYER2_SCORE NUMBER(10) DEFAULT 0,
+    READY_FLAG NUMBER(5)
+);
+-- ROOM 시퀀스
+create sequence seq_room nocycle nocache;
+
+-- QUESTIONS 테이블
+create table questions(
+    qNum number(10) primary key, -- 기본키 문제번호
+    question varchar2(300), -- 문제내용
+    answer number(10) -- 정담 0이면 X 1이면 O
+);
+-- QUESTIONS 시퀀스
+create sequence seq_questions nocycle nocache;
+
+2. 서버실행
+WaitChatServer.java
+GameServerObject.java
+GameServerObject2.java
+GameServerObject3.java
+GameServerObject4.java
+
+3.클라이언트 실행
+Login.java
