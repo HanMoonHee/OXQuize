@@ -358,7 +358,7 @@ public class RoomDAO {
 		return player1Name;
 	}
 
-	// player1의 이름
+	// player2의 이름
 	public String getPlayer2Name(String roomName) {
 		String player2Name = "";
 
@@ -690,7 +690,6 @@ public class RoomDAO {
 			rs = pstmt.executeQuery();
 
 			if (rs.next())
-				;
 			{
 				dto.setRoomNumer(rs.getInt("ROOM_NO"));
 				dto.setRoomName(rs.getString("ROOM_NAME"));
@@ -716,4 +715,62 @@ public class RoomDAO {
 		}
 		return dto;
 	}
+
+	// 2번 플레이어가 ready 버튼 누르면 ready_flag = 1
+	public int updateReadyFlag(String room_name) {
+		int su = 0;
+		getConnection();
+		String sql = "update room set ready_flag = ? where room_name = ?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, 1);
+			pstmt.setString(2, room_name);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try { // 종료
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return su;
+	}
+
+	// 방의 ready_flag 가져오기
+	public int getReadyFlag(String room_name) {
+		int readyFlag = 0;
+		getConnection();
+		String sql = "select ready_flag from room where room_name = ?";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1,room_name);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				readyFlag = rs.getInt("ready_flag");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try { // 종료
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return readyFlag;
+	}
 }
+

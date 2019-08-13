@@ -258,6 +258,7 @@ public class WaitingRoom extends JFrame implements ActionListener, Runnable, Lis
 		try {
 			// 소켓 생성
 			socket = new Socket("192.168.0.46", 9500); // "localhost" "192.168.0.46" 팀장님 ip
+//			socket = new Socket("localhost", 9500); // "localhost" "192.168.0.46" 팀장님 ip
 			// oos, ois 생성
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());

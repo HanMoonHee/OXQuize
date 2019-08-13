@@ -633,32 +633,4 @@ public class MemberDAO {
 		}
 		return dto;
 	}
-
-	// 로그인 상태 가지고 오기
-//	public MemberDTO getMemberDTO(String id){
-//	       
-//        MemberDTO dto = new MemberDTO();
-//       
-//        try {
-//           
-//            getConnection();
-//            String sql = "select * from member where id=?";
-//            pstmt = conn.prepareStatement(sql);
-//            pstmt.setString(1, id);
-//           
-//            rs = pstmt.executeQuery();
-//           
-//            if(rs.next()){
-//                dto.setId(rs.getString("id"));
-//                dto.setNickName(rs.getString("nickname"));
-//                dto.setTel(rs.getString("tel"));
-//                dto.setEmail(rs.getString("email"));
-//               
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }      
-//       
-//        return dto;    
-//    }
 }

@@ -126,8 +126,13 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		nowdto = daoMember.loginDTO2(nickname);
 		// 게임화면 레이아웃
 		// -----------------------------------------------------------------------------------
-		startB = new JButton("Game Start"); // 게임 시작 버튼
-		startB.setEnabled(false);	// 처음에 1명일테니 false로
+		if(this.nickname.equals(daoRoom.getPlayer1Name(this.room_name))) {
+			startB = new JButton("GAME START");
+			startB.setEnabled(false);	// 처음에 1명일테니 false로
+		}
+		else if(this.nickname.equals(daoRoom.getPlayer2Name(this.room_name))){
+			startB = new JButton("READY");
+		}
 		exitB = new JButton("Exit"); // 나가기 버튼
 
 		input = new JTextField(); // 채팅입력 창
@@ -275,10 +280,11 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 	public void service() {
 		try {
 			socket = new Socket("192.168.0.46", 1000*port); // "192.168.0.46" 팀장님 ip   본인 pc로 할땐 localhost로!!
+//			socket = new Socket("localhost", 1000*port); // "192.168.0.46" 팀장님 ip   본인 pc로 할땐 localhost로!!
 
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
-
+			
 			// 서버로 보내기 - 방에 입장 했을때
 			PlayInfoDTO dto = new PlayInfoDTO(); // 게임방에 참가한 플레이어의 dto
 			dto.setCommand(PlayInfo.JOIN);
@@ -418,14 +424,29 @@ public class GameWindow extends JFrame implements Runnable, ActionListener {
 		}
 		// 게임 시작 버튼
 		else if (e.getSource() == startB) { // 게임시작 버튼
-			try {
-				PlayInfoDTO dto = new PlayInfoDTO(); // 시작하면 타이머도 시작
-				dto.setCommand(PlayInfo.TIMER);
-				oos.writeObject(dto);
-				oos.flush();
-
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			if(nickname.equals(daoRoom.getPlayer2Name(room_name))) { // 내가 2번 플레이어일때
+				PlayInfoDTO dto = new PlayInfoDTO();
+				dto.setCommand(PlayInfo.SEND); // 준비 됐다고 채팅창에 메시지 뿌리기
+				dto.setMessage("준비 완료");
+				daoRoom.updateReadyFlag(room_name);// room 테이블 ready_flag 1로 바꾸기
+				try {
+					oos.writeObject(dto);
+					oos.flush();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+			else if(nickname.equals(daoRoom.getPlayer1Name(room_name))) { // 내가 1번 플레이어일때
+				if(daoRoom.getReadyFlag(room_name)==1) { // 2번 플레이어가 레디 상태일때
+					PlayInfoDTO dto = new PlayInfoDTO();
+					dto.setCommand(PlayInfo.TIMER);
+					try {
+						oos.writeObject(dto);
+						oos.flush();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
 			}
 		} else if (e.getSource() == jb[0]) {
 			jb[0].setSelectedIcon(icon_o_clicked);

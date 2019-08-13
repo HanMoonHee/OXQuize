@@ -11,6 +11,7 @@ public class RoomDTO {
 	private String player2; // 2번 플레이어 닉네임
 	private int player1_score;
 	private int player2_score;
+	private int ready_flag;
 
 	// getters
 	public int getRoomNumer() {
@@ -37,6 +38,9 @@ public class RoomDTO {
 	public int getPlayer2_score() {
 		return player2_score;
 	}
+	public int getReadyFlag() {
+		return ready_flag;
+	}
 	
 	// setters
 	public void setRoomNumer(int roomNumer) {
@@ -62,6 +66,9 @@ public class RoomDTO {
 	}
 	public void setPlayer2_score(int player2_score) {
 		this.player2_score = player2_score;
+	}
+	public void setReady_flag(int ready_flag) {
+		this.ready_flag = ready_flag;
 	}
 
 	@Override
