@@ -44,13 +44,7 @@ public class SMTPMailSendManager {
         
         list = dao.getMemberList();
         
-        for(MemberDTO dto : list) {
-			if(dto.getEmail().equals(emailAll)) {
-				randomNumber = (int)(Math.random()*8999)+1000;
-		        System.out.println(randomNumber);
-			}
-		}
-        
+		randomNumber = (int)(Math.random()*8999)+1000;
         
         try{
             //편지보낸시간
